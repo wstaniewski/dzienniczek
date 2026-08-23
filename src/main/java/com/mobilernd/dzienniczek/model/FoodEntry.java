@@ -12,7 +12,9 @@ public class FoodEntry {
 
     private String mealName;
 
-    private String mealType;   // NOWE POLE
+    private String mealType;   // typ posiłku (śniadanie / obiad / przekąska / inne)
+
+    private String dayName;    // NOWE POLE — dzień tygodnia (Poniedziałek, Wtorek...)
 
     private Integer calories;
 
@@ -23,9 +25,11 @@ public class FoodEntry {
 
     public FoodEntry() {}
 
-    public FoodEntry(String mealName, String mealType, Integer calories, LocalDate date, String description) {
+    public FoodEntry(String mealName, String mealType, String dayName,
+                     Integer calories, LocalDate date, String description) {
         this.mealName = mealName;
         this.mealType = mealType;
+        this.dayName = dayName;
         this.calories = calories;
         this.date = date;
         this.description = description;
@@ -38,6 +42,9 @@ public class FoodEntry {
 
     public String getMealType() { return mealType; }
     public void setMealType(String mealType) { this.mealType = mealType; }
+
+    public String getDayName() { return dayName; }
+    public void setDayName(String dayName) { this.dayName = dayName; }
 
     public Integer getCalories() { return calories; }
     public void setCalories(Integer calories) { this.calories = calories; }

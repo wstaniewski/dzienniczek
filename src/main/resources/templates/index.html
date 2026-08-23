@@ -4,12 +4,44 @@
     <meta charset="UTF-8">
     <title>Dzienniczek żywieniowy — Premium</title>
     <link rel="stylesheet" href="/css/main.css">
+
+    <style>
+        /* ⭐ pełne wycentrowanie kart posiłków */
+        .entry-item {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* wycentrowanie poziome */
+            gap: 20px; /* odstęp między ikoną, treścią i przyciskami */
+            padding: 12px;
+        }
+
+        .entry-content {
+            flex: 1;
+            text-align: center; /* wyjustowanie tekstu */
+        }
+
+        .entry-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .entry-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .day-header h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
 
 <div class="layout-three-columns">
 
-    <!-- LEWA KOLUMNA — WPISY (skrolowane) -->
+    <!-- LEWA KOLUMNA — WPISY -->
     <div class="left-column">
 
         <h2 class="title-premium">Wpisy</h2>
@@ -17,11 +49,11 @@
         <form action="/filter" method="get" class="filter-form">
             <select name="meal" class="filter-select" onchange="this.form.submit()">
                 <option th:selected="${selectedFilter == 'Wszystkie'}">Wszystkie</option>
-                <option th:selected="${selectedFilter == 'Śniadanie'}">Śniadanie</option>
-                <option th:selected="${selectedFilter == 'Obiad'}">Obiad</option>
-                <option th:selected="${selectedFilter == 'Kolacja'}">Kolacja</option>
-                <option th:selected="${selectedFilter == 'Przekąska'}">Przekąska</option>
-                <option th:selected="${selectedFilter == 'Inne'}">Inne</option>
+                <option value="śniadanie" th:selected="${selectedFilter == 'śniadanie'}">Śniadanie</option>
+                <option value="obiad" th:selected="${selectedFilter == 'obiad'}">Obiad</option>
+                <option value="kolacja" th:selected="${selectedFilter == 'kolacja'}">Kolacja</option>
+                <option value="przekąska" th:selected="${selectedFilter == 'przekąska'}">Przekąska</option>
+                <option value="inne" th:selected="${selectedFilter == 'inne'}">Inne</option>
             </select>
         </form>
 
@@ -29,23 +61,27 @@
 
             <div th:each="day : ${entriesByDate}">
                 <div class="day-header">
-                    <h3 th:text="${day.key}"></h3>
+                    <h3>
+                        <span th:text="${#temporals.format(day.value[0].date, 'yyyy-MM-dd')}"></span>
+                        —
+                        <span th:text="${day.value[0].dayName}"></span>
+                    </h3>
                 </div>
 
                 <div class="entries">
 
                     <div th:each="entry : ${day.value}"
                          class="entry-item premium-card"
-                         th:classappend="${entry.mealName == 'Śniadanie' ? ' meal-breakfast' :
-                                         (entry.mealName == 'Obiad' ? ' meal-lunch' :
-                                         (entry.mealName == 'Kolacja' ? ' meal-dinner' :
-                                         (entry.mealName == 'Przekąska' ? ' meal-snack' : ' meal-other')))}">
+                         th:classappend="${entry.mealType == 'śniadanie' ? ' meal-breakfast' :
+                                         (entry.mealType == 'obiad' ? ' meal-lunch' :
+                                         (entry.mealType == 'kolacja' ? ' meal-dinner' :
+                                         (entry.mealType == 'przekąska' ? ' meal-snack' : ' meal-other')))}">
 
                         <img class="entry-icon"
-                             th:src="${entry.mealName == 'Śniadanie' ? '/icons/breakfast.svg' :
-                                     (entry.mealName == 'Obiad' ? '/icons/lunch.svg' :
-                                     (entry.mealName == 'Kolacja' ? '/icons/dinner.svg' :
-                                     (entry.mealName == 'Przekąska' ? '/icons/snack.svg' : '/icons/other.svg')))}">
+                             th:src="${entry.mealType == 'śniadanie' ? '/icons/breakfast.svg' :
+                                     (entry.mealType == 'obiad' ? '/icons/lunch.svg' :
+                                     (entry.mealType == 'kolacja' ? '/icons/dinner.svg' :
+                                     (entry.mealType == 'przekąska' ? '/icons/snack.svg' : '/icons/other.svg')))}">
 
                         <div class="entry-content">
                             <strong th:text="${entry.mealName}"></strong> —
@@ -81,7 +117,7 @@
 
     </div>
 
-    <!-- ŚRODKOWA KOLUMNA — DODAJ WPIS (sticky) -->
+    <!-- ŚRODKOWA KOLUMNA — DODAJ WPIS -->
     <div class="middle-column">
         <div class="premium-form">
             <h2 class="title-premium">Dodaj wpis</h2>
@@ -132,7 +168,7 @@
 
     </div>
 
-    <!-- PRAWA KOLUMNA — EDYTUJ WPIS (sticky) -->
+    <!-- PRAWA KOLUMNA — EDYTUJ WPIS -->
     <div class="right-column">
 
         <div id="edit-section" class="premium-form" style="display:none;">

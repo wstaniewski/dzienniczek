@@ -31,7 +31,7 @@ public class FoodEntryService {
         if (mealName == null || mealName.equals("Wszystkie")) {
             return foodEntryRepository.findAllByOrderByDateDesc();
         }
-        return foodEntryRepository.findByMealNameOrderByDateDesc(mealName);
+        return foodEntryRepository.findByMealType(mealName);
     }
 
     public FoodEntry findById(Long id) {

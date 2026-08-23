@@ -16,5 +16,7 @@ public interface FoodEntryRepository extends JpaRepository<FoodEntry, Long> {
     List<FoodEntry> findAllByOrderByDateDesc(); // najnowsze pierwsze
 
     List<FoodEntry> findByMealNameOrderByDateDesc(String mealName);
+
+    List<FoodEntry> findByMealType(String mealType);
 }
 

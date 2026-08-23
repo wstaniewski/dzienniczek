@@ -1,11 +1,6 @@
 package com.mobilernd.dzienniczek.service;
 
 import com.itextpdf.io.font.PdfEncodings;
-import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.layout.properties.VerticalAlignment;
-import com.mobilernd.dzienniczek.model.FoodEntry;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -13,8 +8,14 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.AreaBreakType;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.svg.converter.SvgConverter;
+import com.mobilernd.dzienniczek.model.FoodEntry;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -45,8 +46,8 @@ public class PdfService {
             );
             document.setFont(font);
 
-            // 🔥 Nagłówek PDF
-            Paragraph header = new Paragraph("Dzienniczek żywieniowy — Premium")
+            // 🔥 Nagłówek PDF — BEZ „Premium”
+            Paragraph header = new Paragraph("Dzienniczek żywieniowy")
                     .setFontSize(22)
                     .setBold()
                     .setFontColor(new DeviceRgb(44, 62, 80))
@@ -70,8 +71,12 @@ public class PdfService {
             // ⭐ GENEROWANIE PDF Z GRUPOWANIEM
             for (Map.Entry<LocalDate, List<FoodEntry>> day : entriesByDate.entrySet()) {
 
-                // 🔥 Nagłówek dnia
-                Paragraph dayHeader = new Paragraph(day.getKey().toString())
+                FoodEntry first = day.getValue().get(0);
+
+                // 🔥 Nagłówek dnia: DATA — DZIEŃ TYGODNIA
+                Paragraph dayHeader = new Paragraph(
+                        day.getKey() + " — " + first.getDayName()
+                )
                         .setFontSize(18)
                         .setBold()
                         .setFontColor(new DeviceRgb(52, 73, 94))
@@ -87,14 +92,14 @@ public class PdfService {
                             .useAllAvailableWidth()
                             .setMarginTop(10);
 
-                    // IKONA
+                    // IKONA — TERAZ PO mealType (jak w index.html)
                     Cell iconCell = new Cell()
                             .setBorder(Border.NO_BORDER)
                             .setPadding(10)
                             .setVerticalAlignment(VerticalAlignment.MIDDLE)
                             .setTextAlignment(TextAlignment.CENTER);
 
-                    Image icon = loadSvgIcon(entry.getMealName(), pdf);
+                    Image icon = loadSvgIconByMealType(entry.getMealType(), pdf);
 
                     if (icon != null) {
                         icon.setWidth(40);
@@ -131,6 +136,11 @@ public class PdfService {
 
                     document.add(card);
                 }
+
+                // ⭐ NOWA STRONA PO KAŻDYM DNIU (oprócz ostatniego)
+                if (!day.equals(entriesByDate.entrySet().toArray()[entriesByDate.size() - 1])) {
+                    document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+                }
             }
 
             document.close();
@@ -141,14 +151,14 @@ public class PdfService {
         }
     }
 
-    // 🔥 Ikony SVG
-    private Image loadSvgIcon(String meal, PdfDocument pdf) {
+    // 🔥 Ikony SVG — TERAZ PO mealType (zgodnie z index.html)
+    private Image loadSvgIconByMealType(String mealType, PdfDocument pdf) {
         try {
-            String path = switch (meal) {
-                case "Śniadanie" -> "src/main/resources/static/icons/breakfast.svg";
-                case "Obiad"     -> "src/main/resources/static/icons/lunch.svg";
-                case "Kolacja"   -> "src/main/resources/static/icons/dinner.svg";
-                case "Przekąska" -> "src/main/resources/static/icons/snack.svg";
+            String path = switch (mealType) {
+                case "śniadanie" -> "src/main/resources/static/icons/breakfast.svg";
+                case "obiad"     -> "src/main/resources/static/icons/lunch.svg";
+                case "kolacja"   -> "src/main/resources/static/icons/dinner.svg";
+                case "przekąska" -> "src/main/resources/static/icons/snack.svg";
                 default          -> "src/main/resources/static/icons/other.svg";
             };
 
@@ -156,7 +166,7 @@ public class PdfService {
             return SvgConverter.convertToImage(svgStream, pdf);
 
         } catch (IOException e) {
-            System.out.println("Nie znaleziono ikony SVG dla: " + meal);
+            System.out.println("Nie znaleziono ikony SVG dla mealType: " + mealType);
             return null;
         }
     }
