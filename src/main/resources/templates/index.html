@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dzienniczek żywieniowy — Premium</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<div class="layout-three-columns">
+
+    <!-- LEWA KOLUMNA — WPISY (skrolowane) -->
+    <div class="left-column">
+
+        <h2 class="title-premium">Wpisy</h2>
+
+        <form action="/filter" method="get" class="filter-form">
+            <select name="meal" class="filter-select" onchange="this.form.submit()">
+                <option th:selected="${selectedFilter == 'Wszystkie'}">Wszystkie</option>
+                <option th:selected="${selectedFilter == 'Śniadanie'}">Śniadanie</option>
+                <option th:selected="${selectedFilter == 'Obiad'}">Obiad</option>
+                <option th:selected="${selectedFilter == 'Kolacja'}">Kolacja</option>
+                <option th:selected="${selectedFilter == 'Przekąska'}">Przekąska</option>
+                <option th:selected="${selectedFilter == 'Inne'}">Inne</option>
+            </select>
+        </form>
+
+        <div class="daily-entries">
+
+            <div th:each="day : ${entriesByDate}">
+                <div class="day-header">
+                    <h3 th:text="${day.key}"></h3>
+                </div>
+
+                <div class="entries">
+
+                    <div th:each="entry : ${day.value}"
+                         class="entry-item premium-card"
+                         th:classappend="${entry.mealName == 'Śniadanie' ? ' meal-breakfast' :
+                                         (entry.mealName == 'Obiad' ? ' meal-lunch' :
+                                         (entry.mealName == 'Kolacja' ? ' meal-dinner' :
+                                         (entry.mealName == 'Przekąska' ? ' meal-snack' : ' meal-other')))}">
+
+                        <img class="entry-icon"
+                             th:src="${entry.mealName == 'Śniadanie' ? '/icons/breakfast.svg' :
+                                     (entry.mealName == 'Obiad' ? '/icons/lunch.svg' :
+                                     (entry.mealName == 'Kolacja' ? '/icons/dinner.svg' :
+                                     (entry.mealName == 'Przekąska' ? '/icons/snack.svg' : '/icons/other.svg')))}">
+
+                        <div class="entry-content">
+                            <strong th:text="${entry.mealName}"></strong> —
+                            <span th:text="${entry.calories}"></span> kcal
+                            <br><br>
+                            <em th:text="${entry.description}"></em>
+                        </div>
+
+                        <div class="entry-actions">
+                            <form th:action="@{'/delete/' + ${entry.id}}" method="post">
+                                <button class="delete-btn">Usuń</button>
+                            </form>
+
+                            <button type="button"
+                                    class="edit-btn"
+                                    th:attr="data-id=${entry.id},
+                                             data-meal=${entry.mealName},
+                                             data-calories=${entry.calories},
+                                             data-date=${entry.date},
+                                             data-description=${entry.description}"
+                                    onclick="openEditFromButton(this)">
+                                Edytuj
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ŚRODKOWA KOLUMNA — DODAJ WPIS (sticky) -->
+    <div class="middle-column">
+
+        <div class="premium-form">
+
+            <h2 class="title-premium">Dodaj wpis</h2>
+
+            <form th:action="@{/save}" th:object="${foodEntry}" method="post">
+
+                <label>Rodzaj posiłku:</label>
+                <select th:field="*{mealName}" class="meal-select-with-icon form-input" id="mealSelect" required>
+                    <option value="Śniadanie">Śniadanie</option>
+                    <option value="Obiad">Obiad</option>
+                    <option value="Kolacja">Kolacja</option>
+                    <option value="Przekąska">Przekąska</option>
+                    <option value="Inne">Inne</option>
+                </select>
+
+                <label>Kalorie:</label>
+                <input type="number" th:field="*{calories}" class="form-input" min="0" step="1" required>
+
+                <label>Data:</label>
+                <input type="date" th:field="*{date}" class="form-input" id="dateField" required>
+
+                <label>Opis:</label>
+                <textarea th:field="*{description}" class="form-input" rows="4"></textarea>
+
+                <button type="submit" class="premium-btn">Zapisz</button>
+            </form>
+
+        </div>
+
+        <a href="/pdf/food-entries" class="pdf-btn">
+            <img src="/icons/pdf.svg" class="pdf-icon">
+            Pobierz PDF
+        </a>
+
+    </div>
+
+    <!-- PRAWA KOLUMNA — EDYTUJ WPIS (sticky) -->
+    <div class="right-column">
+
+        <div id="edit-section" class="premium-form" style="display:none;">
+
+            <h2 class="title-premium">Edytuj wpis</h2>
+
+            <form th:action="@{/update}" method="post">
+
+                <input type="hidden" id="edit-id" name="id">
+
+                <label>Rodzaj posiłku:</label>
+                <select id="edit-mealName" name="mealName" class="meal-select-with-icon form-input" required>
+                    <option value="Śniadanie">Śniadanie</option>
+                    <option value="Obiad">Obiad</option>
+                    <option value="Kolacja">Kolacja</option>
+                    <option value="Przekąska">Przekąska</option>
+                    <option value="Inne">Inne</option>
+                </select>
+
+                <label>Kalorie:</label>
+                <input type="number" id="edit-calories" name="calories" class="form-input" required>
+
+                <label>Data:</label>
+                <input type="date" id="edit-date" name="date" class="form-input" required>
+
+                <label>Opis:</label>
+                <textarea id="edit-description" name="description" class="form-input" rows="4"></textarea>
+
+                <button type="submit" class="premium-btn">Zaktualizuj</button>
+                <button type="button" class="premium-btn" onclick="closeEdit()">Zamknij</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/js/app.js"></script>
+
+</body>
+</html>
