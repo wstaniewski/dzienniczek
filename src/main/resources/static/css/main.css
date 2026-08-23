@@ -41,8 +41,9 @@ body {
     padding: 25px;
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    height: 650px;
     overflow: hidden;
+    height: auto;          /* dynamiczna wysokość */
+    min-height: 200px;     /* żeby ramka nie była zbyt mała */
 }
 
 /* INPUTY — wyrównane marginesy */
@@ -112,6 +113,46 @@ label {
     font-size: 15px;
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(241,196,15,0.3);
+}
+
+.file-input {
+    display: none; /* ukrywamy natywny input */
+}
+
+.file-label {
+    background: #3498db;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-block;     /* KLUCZ — jedna linia */
+    width: fit-content;
+    text-align: left;
+    white-space: nowrap;       /* nie łamie się */
+}
+
+.file-name {
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 500;
+    text-align: left;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-label:hover {
+    background: #2980b9;
+}
+
+.file-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
 /* PREMIUM FILTR WPISÓW */

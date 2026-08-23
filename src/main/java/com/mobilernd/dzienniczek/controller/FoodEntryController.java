@@ -2,9 +2,11 @@ package com.mobilernd.dzienniczek.controller;
 
 import com.mobilernd.dzienniczek.model.FoodEntry;
 import com.mobilernd.dzienniczek.service.FoodEntryService;
+import com.mobilernd.dzienniczek.service.OcrImportService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,9 +18,11 @@ import java.util.Comparator;
 public class FoodEntryController {
 
     private final FoodEntryService service;
+    private final OcrImportService ocrImportService;
 
-    public FoodEntryController(FoodEntryService service) {
+    public FoodEntryController(FoodEntryService service, OcrImportService ocrImportService) {
         this.service = service;
+        this.ocrImportService = ocrImportService;
     }
 
     @GetMapping("/")
@@ -134,5 +138,11 @@ public class FoodEntryController {
         model.addAttribute("selectedFilter", meal);
 
         return "index";
+    }
+
+    @PostMapping("/import/photo")
+    public String importFromPhoto(@RequestParam("file") MultipartFile file) {
+        ocrImportService.process(file);
+        return "redirect:/";
     }
 }

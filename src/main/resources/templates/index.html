@@ -83,11 +83,8 @@
 
     <!-- ŚRODKOWA KOLUMNA — DODAJ WPIS (sticky) -->
     <div class="middle-column">
-
         <div class="premium-form">
-
             <h2 class="title-premium">Dodaj wpis</h2>
-
             <form th:action="@{/save}" th:object="${foodEntry}" method="post">
 
                 <label>Rodzaj posiłku:</label>
@@ -110,7 +107,22 @@
 
                 <button type="submit" class="premium-btn">Zapisz</button>
             </form>
+        </div>
 
+        <div class="premium-form" style="margin-top: 20px;">
+            <h2 class="title-premium">Import z planu żywieniowego (zdjęcie)</h2>
+
+            <form action="/import/photo" method="post" enctype="multipart/form-data">
+                <label>Zdjęcie planu żywieniowego (tydzień):</label>
+
+                <div class="file-row">
+                    <input type="file" name="file" id="fileUpload" accept="image/*" class="file-input" required>
+                    <label for="fileUpload" class="file-label">Wybierz plik</label>
+                    <span id="file-name" class="file-name"></span>
+                </div>
+
+                <button type="submit" class="premium-btn">Importuj z zdjęcia</button>
+            </form>
         </div>
 
         <a href="/pdf/food-entries" class="pdf-btn">

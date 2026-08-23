@@ -62,3 +62,18 @@ function openEdit(id, mealName, calories, date, description) {
 function closeEdit() {
     document.getElementById('edit-section').style.display = 'none';
 }
+
+const fileInput = document.getElementById('fileUpload');
+const fileNameSpan = document.getElementById('file-name');
+
+if (fileInput) {
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        fileNameSpan.textContent = file ? file.name : "";
+    });
+}
+
+fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    fileNameSpan.textContent = file ? fileInput.value : "";
+});

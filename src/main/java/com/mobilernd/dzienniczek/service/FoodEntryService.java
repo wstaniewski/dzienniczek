@@ -13,33 +13,33 @@ import java.util.stream.Collectors;
 @Service
 public class FoodEntryService {
 
-    private final FoodEntryRepository repo;
+    private final FoodEntryRepository foodEntryRepository;
 
-    public FoodEntryService(FoodEntryRepository repo) {
-        this.repo = repo;
+    public FoodEntryService(FoodEntryRepository foodEntryRepository) {
+        this.foodEntryRepository = foodEntryRepository;
     }
 
     public void save(FoodEntry entry) {
-        repo.save(entry);
+        foodEntryRepository.save(entry);
     }
 
     public List<FoodEntry> findAllSorted() {
-        return repo.findAllByOrderByDateDesc(); // lub Asc
+        return foodEntryRepository.findAllByOrderByDateDesc(); // lub Asc
     }
 
     public List<FoodEntry> filterByMeal(String mealName) {
         if (mealName == null || mealName.equals("Wszystkie")) {
-            return repo.findAllByOrderByDateDesc();
+            return foodEntryRepository.findAllByOrderByDateDesc();
         }
-        return repo.findByMealNameOrderByDateDesc(mealName);
+        return foodEntryRepository.findByMealNameOrderByDateDesc(mealName);
     }
 
     public FoodEntry findById(Long id) {
-        return repo.findById(id).orElse(null);
+        return foodEntryRepository.findById(id).orElse(null);
     }
 
     public void delete(Long id) {
-        repo.deleteById(id);
+        foodEntryRepository.deleteById(id);
     }
 
     // NOWE: walidacja unikalności posiłku
@@ -50,11 +50,11 @@ public class FoodEntryService {
             return true;
         }
 
-        boolean exists = repo.existsByMealNameAndDate(entry.getMealName(), entry.getDate());
+        boolean exists = foodEntryRepository.existsByMealNameAndDate(entry.getMealName(), entry.getDate());
 
         // jeśli edytujemy istniejący wpis, nie traktujemy go jako duplikat
         if (entry.getId() != null) {
-            FoodEntry original = repo.findById(entry.getId()).orElse(null);
+            FoodEntry original = foodEntryRepository.findById(entry.getId()).orElse(null);
             if (original != null &&
                     original.getMealName().equals(entry.getMealName()) &&
                     original.getDate().equals(entry.getDate())) {
@@ -66,7 +66,7 @@ public class FoodEntryService {
     }
 
     public Map<LocalDate, List<FoodEntry>> findAllGroupedByDate() {
-        List<FoodEntry> all = repo.findAllByOrderByDateDesc();
+        List<FoodEntry> all = foodEntryRepository.findAllByOrderByDateDesc();
         return all.stream()
                 .collect(Collectors.groupingBy(FoodEntry::getDate,
                         LinkedHashMap::new,

@@ -1,7 +1,6 @@
 package com.mobilernd.dzienniczek.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -12,7 +11,11 @@ public class FoodEntry {
     private Long id;
 
     private String mealName;
+
+    private String mealType;   // NOWE POLE
+
     private Integer calories;
+
     private LocalDate date;
 
     @Column(length = 1000)
@@ -20,20 +23,28 @@ public class FoodEntry {
 
     public FoodEntry() {}
 
-    public FoodEntry(String mealName, Integer calories, LocalDate date, String description) {
+    public FoodEntry(String mealName, String mealType, Integer calories, LocalDate date, String description) {
         this.mealName = mealName;
+        this.mealType = mealType;
         this.calories = calories;
         this.date = date;
         this.description = description;
     }
 
     public Long getId() { return id; }
+
     public String getMealName() { return mealName; }
     public void setMealName(String mealName) { this.mealName = mealName; }
+
+    public String getMealType() { return mealType; }
+    public void setMealType(String mealType) { this.mealType = mealType; }
+
     public Integer getCalories() { return calories; }
     public void setCalories(Integer calories) { this.calories = calories; }
+
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 }
