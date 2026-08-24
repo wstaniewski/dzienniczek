@@ -27,8 +27,12 @@ public class OcrImportService {
     }
 
     private ImageAnnotatorClient createVisionClient() throws Exception {
-        GoogleCredentials credentials = GoogleCredentials
+        /**GoogleCredentials credentials = GoogleCredentials
                 .fromStream(new FileInputStream("src/main/resources/google-vision-key.json"))
+                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));**/
+
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(new FileInputStream("/Users/wojciechstaniewski/.config/google/vision/google-vision-key.json"))
                 .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
 
         ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
@@ -72,6 +76,9 @@ public class OcrImportService {
                 .addFeatures(feat)
                 .setImage(img)
                 .build();
+        System.out.println("JAVA_HOME = " + System.getenv("HOME"));
+        System.out.println("ADC_PATH = " + System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
+        System.out.println("FILE_EXISTS = " + new File(System.getenv("GOOGLE_APPLICATION_CREDENTIALS")).exists());
 
         try (ImageAnnotatorClient client = createVisionClient()) {
             BatchAnnotateImagesResponse response =
