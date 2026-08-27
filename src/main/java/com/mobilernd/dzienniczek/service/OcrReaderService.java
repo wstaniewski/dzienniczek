@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.util.Collections;
 
@@ -16,8 +15,9 @@ import java.util.Collections;
 public class OcrReaderService {
 
     private ImageAnnotatorClient createVisionClient() throws Exception {
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new FileInputStream("/Users/wojciechstaniewski/.config/google/vision/google-vision-key.json"))
+
+        // ⭐ W chmurze: automatyczne uwierzytelnianie (ADC)
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault()
                 .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
 
         ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
