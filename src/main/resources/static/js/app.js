@@ -77,3 +77,40 @@ fileInput.addEventListener('change', () => {
     const file = fileInput.files[0];
     fileNameSpan.textContent = file ? fileInput.value : "";
 });
+
+function showPremiumAlert(message, type = "success") {
+    const alertBox = document.getElementById("import-alert");
+
+    alertBox.innerHTML = `
+        <span class="premium-alert-icon">${type === "success" ? "✔" : "✖"}</span>
+        <span>${message}</span>
+    `;
+
+    alertBox.className = "premium-alert " +
+        (type === "success" ? "premium-alert-success" : "premium-alert-error");
+
+    alertBox.style.display = "flex";
+
+    setTimeout(() => {
+        alertBox.classList.add("premium-alert-show");
+    }, 10);
+
+    setTimeout(() => {
+        alertBox.classList.remove("premium-alert-show");
+        setTimeout(() => alertBox.style.display = "none", 400);
+    }, 4000);
+}
+
+function importMenu() {
+    fetch('/jadlospis/importWebsite', { method: 'POST' })
+        .then(response => {
+            if (response.ok) {
+                showPremiumAlert("Jadłospis został zaimportowany!", "success");
+            } else {
+                showPremiumAlert("Błąd importu jadłospisu", "error");
+            }
+        })
+        .catch(() => {
+            showPremiumAlert("Błąd połączenia z serwerem", "error");
+        });
+}

@@ -3,6 +3,7 @@ package com.mobilernd.dzienniczek.controller;
 import com.mobilernd.dzienniczek.model.FoodEntry;
 import com.mobilernd.dzienniczek.service.FoodEntryService;
 import com.mobilernd.dzienniczek.service.OcrImportService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -147,4 +148,15 @@ public class FoodEntryController {
         ocrImportService.process(file);
         return "redirect:/";
     }
+
+    @PostMapping("/jadlospis/importWebsite")
+    public ResponseEntity<Void> importWebsite() {
+        try {
+            ocrImportService.processFromWebsite();
+            return ResponseEntity.ok().build(); // ✔ 200 OK — brak redirectu
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build(); // ✔ 500 — JS pokaże Snackbar
+        }
+    }
+
 }

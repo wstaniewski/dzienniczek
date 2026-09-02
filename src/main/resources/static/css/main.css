@@ -215,6 +215,39 @@ label {
     margin-left: auto;
 }
 
+.premium-alert {
+    margin-top: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.premium-alert-show {
+    opacity: 1;
+}
+
+.premium-alert-success {
+    background-color: #e8f7ec;
+    color: #2e7d32;
+    border-left: 5px solid #4caf50;
+}
+
+.premium-alert-error {
+    background-color: #fdecea;
+    color: #c62828;
+    border-left: 5px solid #e53935;
+}
+
+.premium-alert-icon {
+    font-size: 20px;
+}
+
 /* Kolory kart */
 .meal-breakfast { border-left: 10px solid #f1c40f; }
 .meal-lunch     { border-left: 10px solid #2ecc71; }

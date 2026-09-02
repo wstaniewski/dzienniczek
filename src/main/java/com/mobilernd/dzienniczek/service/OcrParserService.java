@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class OcrParserService {
@@ -168,22 +170,39 @@ public class OcrParserService {
     }
 
     private LocalDate detectMondayDate(String text) {
-        for (String line : text.split("\n")) {
-            line = line.trim().replace("r.", "").replace("r", "").trim();
 
-            if (line.matches("\\d{1,2}-\\d{1,2}\\.\\d{1,2}\\.\\d{2,4}")) {
-                String[] parts = line.split("-");
-                String startDay = parts[0].trim();
-                String[] rightSplit = parts[1].trim().split("\\.");
+        Pattern p = Pattern.compile(
+                "(\\d{1,2})\\s*[–-]\\s*(\\d{1,2})\\.(\\d{1,2})\\.(\\d{2,4})"
+        );
 
-                return LocalDate.of(
-                        Integer.parseInt(rightSplit[2]),
-                        Integer.parseInt(rightSplit[1]),
-                        Integer.parseInt(startDay)
-                );
+        Matcher m = p.matcher(text);
+
+        if (m.find()) {
+            int startDay = Integer.parseInt(m.group(1));
+            int endDay = Integer.parseInt(m.group(2));
+            int month = Integer.parseInt(m.group(3));
+            int year = Integer.parseInt(m.group(4));
+
+            // ⭐ DETEKCJA BŁĘDNEJ DATY
+            boolean startLooksWrong = (endDay - startDay) > 7;
+
+            if (startLooksWrong) {
+                System.out.println("⚠ OCR: początek zakresu jest błędny (" + startDay + "), koniec jest poprawny (" + endDay + ")");
+
+                // ⭐ prawidłowy początek tygodnia = koniec - 4 dni
+                int correctedStart = endDay - 4;
+
+                System.out.println("✔ Ustalono prawidłowy początek tygodnia: " + correctedStart + "." + month + "." + year);
+
+                return LocalDate.of(year, month, correctedStart);
             }
+
+            // ⭐ Normalny przypadek — obie daty wyglądają poprawnie
+            System.out.println("✔ OCR: obie daty wyglądają poprawnie: " + startDay + "–" + endDay);
+            return LocalDate.of(year, month, startDay);
         }
 
+        System.out.println("⚠ Nie znaleziono zakresu dat — używam LocalDate.now()");
         return LocalDate.now();
     }
 
