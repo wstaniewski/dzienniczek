@@ -19,8 +19,7 @@ import com.mobilernd.dzienniczek.model.FoodEntry;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,8 +38,9 @@ public class PdfService {
             document.setMargins(40, 40, 40, 40);
 
             // 🔥 CZCIONKA PL
+            InputStream fontStream = getClass().getResourceAsStream("/static/fonts/NotoSans-Regular.ttf");
             PdfFont font = PdfFontFactory.createFont(
-                    "src/main/resources/static/fonts/NotoSans-Regular.ttf",
+                    fontStream.readAllBytes(),
                     PdfEncodings.IDENTITY_H,
                     PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED
             );
@@ -154,19 +154,25 @@ public class PdfService {
     // 🔥 Ikony SVG — TERAZ PO mealType (zgodnie z index.html)
     private Image loadSvgIconByMealType(String mealType, PdfDocument pdf) {
         try {
-            String path = switch (mealType) {
-                case "śniadanie" -> "src/main/resources/static/icons/breakfast.svg";
-                case "obiad"     -> "src/main/resources/static/icons/lunch.svg";
-                case "kolacja"   -> "src/main/resources/static/icons/dinner.svg";
-                case "przekąska" -> "src/main/resources/static/icons/snack.svg";
-                default          -> "src/main/resources/static/icons/other.svg";
+            String resourcePath = switch (mealType) {
+                case "śniadanie" -> "/static/icons/breakfast.svg";
+                case "obiad"     -> "/static/icons/lunch.svg";
+                case "kolacja"   -> "/static/icons/dinner.svg";
+                case "przekąska" -> "/static/icons/snack.svg";
+                default          -> "/static/icons/other.svg";
             };
 
-            FileInputStream svgStream = new FileInputStream(path);
+            InputStream svgStream = getClass().getResourceAsStream(resourcePath);
+
+            if (svgStream == null) {
+                System.out.println("Nie znaleziono ikony SVG dla mealType: " + mealType);
+                return null;
+            }
+
             return SvgConverter.convertToImage(svgStream, pdf);
 
-        } catch (IOException e) {
-            System.out.println("Nie znaleziono ikony SVG dla mealType: " + mealType);
+        } catch (Exception e) {
+            System.out.println("Błąd ładowania SVG dla mealType: " + mealType);
             return null;
         }
     }
