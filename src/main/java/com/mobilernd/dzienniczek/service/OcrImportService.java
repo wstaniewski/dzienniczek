@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -37,15 +38,28 @@ public class OcrImportService {
     public void processFromWebsite() {
         try {
             saveEntries(kidsviewMenuFetcher.fetchMenuText());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Nie udało się pobrać jadłospisu", e);
         }
     }
 
     private void saveEntries(String text) {
-        List<FoodEntry> entries = parser.parse(text);
-        for (FoodEntry e : entries) {
-            repo.save(e);
+        List<FoodEntry> newEntries = parser.parse(text);
+
+        for (FoodEntry e : newEntries) {
+            // sprawdź czy taki wpis już istnieje
+            Optional<FoodEntry> existing = repo.findByDateAndMealName(e.getDate(), e.getMealName());
+
+            if (existing.isPresent()) {
+                // aktualizuj opis zamiast nadpisywać cały dzień
+                FoodEntry old = existing.get();
+                old.setDescription(old.getDescription() + "\n" + e.getDescription());
+                repo.save(old);
+            } else {
+                // dodaj nowy wpis
+                repo.save(e);
+            }
         }
     }
+
 }
