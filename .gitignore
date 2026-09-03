@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+cloud-deploy.sh
