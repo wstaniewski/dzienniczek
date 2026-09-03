@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-cloud-deploy.sh
+cloud-deploy.conf
