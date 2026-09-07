@@ -182,7 +182,7 @@
             <h2 class="title-premium">Import z planu żywieniowego (zdjęcie)</h2>
 
             <form action="/import/photo" method="post" enctype="multipart/form-data">
-                <label>Zdjęcie planu żywieniowego (tydzień):</label>
+                <label>Zdjęcie planu żywieniowego (Ważne żeby zdjecie zawierało tylko jedną stronę z jadłospisu):</label>
 
                 <div class="file-row">
                     <input type="file" name="file" id="fileUpload" accept="image/*" class="file-input" required>
@@ -194,14 +194,14 @@
             </form>
         </div>
 
-        <div class="premium-form" style="margin-top: 20px;">
+  <!--      <div class="premium-form" style="margin-top: 20px;">
             <h2 class="title-premium">Import jadłospisu ze strony żłobka</h2>
 
             <button type="button" class="premium-btn" onclick="importMenu()">Importuj jadłospis</button>
 
-            <!-- ⭐ Premium Alert tuż pod przyciskiem -->
+            &lt;!&ndash; ⭐ Premium Alert tuż pod przyciskiem &ndash;&gt;
             <div id="import-alert" class="premium-alert" style="display:none;"></div>
-        </div>
+        </div>-->
 
         <a href="/pdf/food-entries" class="pdf-btn">
             <img src="/icons/pdf.svg" class="pdf-icon">

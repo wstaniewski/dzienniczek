@@ -23,6 +23,12 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
             Pattern.CASE_INSENSITIVE
     );
 
+    // 🔥 słowa-klucze zup (działa nawet bez przecinków)
+    private static final List<String> SOUP_KEYWORDS = List.of(
+            "zupa", "krupnik", "pomidorowa", "jarzynowa", "ogórkowa", "rosół",
+            "krem", "barszcz", "żurek", "fasolowa", "grochowa"
+    );
+
     private String normalize(String line) {
         return line.toLowerCase()
                 .replace("—", "-")
@@ -86,6 +92,39 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
         }
 
         return n.trim();
+    }
+
+    // 🔥 automatyczne rozdzielanie zupy i drugiego dania
+    private String[] splitSoupAndSecond(String desc) {
+        String lower = desc.toLowerCase();
+
+        for (String keyword : SOUP_KEYWORDS) {
+            int idx = lower.indexOf(keyword);
+            if (idx != -1) {
+
+                // znajdź pierwszy przecinek po słowie zupy
+                int comma = desc.indexOf(",", idx);
+
+                if (comma != -1) {
+                    String soup = desc.substring(0, comma).trim();
+                    String second = desc.substring(comma + 1).trim();
+                    return new String[]{soup, second};
+                }
+
+                // brak przecinka → heurystyka:
+                // pierwsze zdanie = zupa, reszta = drugie danie
+                String[] parts = desc.split("\\.");
+                if (parts.length > 1) {
+                    return new String[]{parts[0].trim(), desc.substring(parts[0].length()).trim()};
+                }
+
+                // brak kropki → całość to zupa
+                return new String[]{desc.trim(), ""};
+            }
+        }
+
+        // brak zupy → całość to drugie danie
+        return new String[]{"", desc.trim()};
     }
 
     private String resolveDayName(LocalDate date) {
@@ -215,12 +254,29 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
             }
 
             if (currentMeal != null) {
-                allEntries.add(buildEntry(
-                        resolveDayName(currentDate),
-                        currentMeal,
-                        currentDesc.toString().trim(),
-                        currentDate
-                ));
+
+                // 🔥 rozdzielanie zupy i II dania — niezależnie od nagłówków
+                String[] parts = splitSoupAndSecond(currentDesc.toString().trim());
+                String soup = parts[0];
+                String second = parts[1];
+
+                if (!soup.isEmpty()) {
+                    allEntries.add(buildEntry(
+                            resolveDayName(currentDate),
+                            "Zupa",
+                            soup,
+                            currentDate
+                    ));
+                }
+
+                if (!second.isEmpty()) {
+                    allEntries.add(buildEntry(
+                            resolveDayName(currentDate),
+                            "II danie",
+                            second,
+                            currentDate
+                    ));
+                }
             }
         }
 
@@ -229,10 +285,10 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
 
     private FoodEntry buildEntry(String day, String meal, String desc, LocalDate date) {
         FoodEntry entry = new FoodEntry();
-        entry.setDayName(day);          // identycznie jak w parserze żłobka
+        entry.setDayName(day);
         entry.setMealName(meal);
         entry.setDescription(desc);
-        entry.setDate(date);        // LocalDate — BEZ formatowania
+        entry.setDate(date);
         entry.setMealType(resolveMealType(meal));
         entry.setCalories(0);
         return entry;
@@ -241,7 +297,9 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
     private String resolveMealType(String mealName) {
         return switch (mealName) {
             case "Śniadanie", "II śniadanie" -> "śniadanie";
-            case "Zupa", "II danie", "Obiad" -> "obiad";
+            case "Zupa" -> "pierwsze_danie";
+            case "II danie" -> "drugie_danie";
+            case "Obiad" -> "obiad";
             case "Podwieczorek" -> "przekąska";
             default -> "inne";
         };
