@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 public class PrzedszkoleParserService implements OcrParserStrategy {
 
-    // 🔥 Ultra tolerancyjny nagłówek dnia — działa dla OCR
     private static final Pattern DAY_HEADER_PATTERN =
             Pattern.compile("(?i)(poniedziałek|wtorek|środa|czwartek|piątek).*?(\\d{2})\\.(\\d{2})\\.(\\d{4})");
 
@@ -89,7 +88,18 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
         return n.trim();
     }
 
-    // 🔥 DZIAŁAJĄCY PODZIAŁ NA DNI
+    private String resolveDayName(LocalDate date) {
+        return switch (date.getDayOfWeek()) {
+            case MONDAY -> "Poniedziałek";
+            case TUESDAY -> "Wtorek";
+            case WEDNESDAY -> "Środa";
+            case THURSDAY -> "Czwartek";
+            case FRIDAY -> "Piątek";
+            case SATURDAY -> "Sobota";
+            case SUNDAY -> "Niedziela";
+        };
+    }
+
     private List<String> splitIntoDayBlocks(String text) {
         List<String> blocks = new ArrayList<>();
         StringBuilder current = null;
@@ -123,10 +133,8 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
 
         List<FoodEntry> allEntries = new ArrayList<>();
 
-        // 1. Rozdzielamy tekst na dni
         List<String> dayBlocks = splitIntoDayBlocks(text);
 
-        // 2. Parsujemy każdy dzień osobno
         for (String dayText : dayBlocks) {
 
             LocalDate currentDate = null;
@@ -155,12 +163,21 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
 
                 String meal = detectMeal(line);
 
+                if (meal != null && currentDate == null) {
+                    continue;
+                }
+
                 if (inAllergenBlock) {
                     if (meal != null) {
                         inAllergenBlock = false;
 
                         if (currentMeal != null) {
-                            allEntries.add(buildEntry(currentMeal, currentDesc.toString().trim(), currentDate));
+                            allEntries.add(buildEntry(
+                                    resolveDayName(currentDate),
+                                    currentMeal,
+                                    currentDesc.toString().trim(),
+                                    currentDate
+                            ));
                         }
 
                         currentMeal = meal;
@@ -175,7 +192,12 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
                 if (meal != null) {
 
                     if (currentMeal != null) {
-                        allEntries.add(buildEntry(currentMeal, currentDesc.toString().trim(), currentDate));
+                        allEntries.add(buildEntry(
+                                resolveDayName(currentDate),
+                                currentMeal,
+                                currentDesc.toString().trim(),
+                                currentDate
+                        ));
                     }
 
                     currentMeal = meal;
@@ -193,18 +215,24 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
             }
 
             if (currentMeal != null) {
-                allEntries.add(buildEntry(currentMeal, currentDesc.toString().trim(), currentDate));
+                allEntries.add(buildEntry(
+                        resolveDayName(currentDate),
+                        currentMeal,
+                        currentDesc.toString().trim(),
+                        currentDate
+                ));
             }
         }
 
         return allEntries;
     }
 
-    private FoodEntry buildEntry(String meal, String desc, LocalDate date) {
+    private FoodEntry buildEntry(String day, String meal, String desc, LocalDate date) {
         FoodEntry entry = new FoodEntry();
+        entry.setDayName(day);          // identycznie jak w parserze żłobka
         entry.setMealName(meal);
         entry.setDescription(desc);
-        entry.setDate(date);
+        entry.setDate(date);        // LocalDate — BEZ formatowania
         entry.setMealType(resolveMealType(meal));
         entry.setCalories(0);
         return entry;
