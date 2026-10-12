@@ -72,5 +72,9 @@ public class FoodEntryService {
                         LinkedHashMap::new,
                         Collectors.toList()));
     }
+
+    public void deleteAll() {
+        foodEntryRepository.deleteAll();
+    }
 }
 

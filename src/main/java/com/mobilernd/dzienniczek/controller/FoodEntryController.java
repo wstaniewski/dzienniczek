@@ -3,13 +3,11 @@ package com.mobilernd.dzienniczek.controller;
 import com.mobilernd.dzienniczek.model.FoodEntry;
 import com.mobilernd.dzienniczek.service.FoodEntryService;
 import com.mobilernd.dzienniczek.service.OcrImportService;
+import com.mobilernd.dzienniczek.service.ProgmanImportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -22,10 +20,12 @@ public class FoodEntryController {
 
     private final FoodEntryService service;
     private final OcrImportService ocrImportService;
+    private final ProgmanImportService progmanImportService;
 
-    public FoodEntryController(FoodEntryService service, OcrImportService ocrImportService) {
+    public FoodEntryController(FoodEntryService service, OcrImportService ocrImportService, ProgmanImportService progmanImportService) {
         this.service = service;
         this.ocrImportService = ocrImportService;
+        this.progmanImportService = progmanImportService;
     }
 
     @GetMapping("/")
@@ -159,4 +159,44 @@ public class FoodEntryController {
         }
     }
 
+/*    @PostMapping("/progman/import")
+    @ResponseBody
+    public String importProgman(@RequestParam(defaultValue = "10") int weeks) {
+
+        try {
+            int imported = progmanImportService.importWeeks(weeks);
+            return "Zaimportowano: " + imported;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getClass().getName()
+                    + " -> "
+                    + e.getMessage();
+        }
+    }*/
+
+    @PostMapping("/progman/import")
+    @ResponseBody
+    public String importProgman(@RequestParam String fromDate) {
+
+        try {
+            int imported = progmanImportService.importFromDate(LocalDate.parse(fromDate));
+            return "Zaimportowano: " + imported;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getClass().getName()
+                    + " -> "
+                    + e.getMessage();
+        }
+    }
+
+    @PostMapping("/reset")
+    @ResponseBody
+    public String resetAll() {
+
+        service.deleteAll();
+
+        return "OK";
+    }
 }

@@ -101,16 +101,41 @@ function showPremiumAlert(message, type = "success") {
     }, 4000);
 }
 
-function importMenu() {
-    fetch('/jadlospis/importWebsite', { method: 'POST' })
-        .then(response => {
-            if (response.ok) {
-                showPremiumAlert("Jadłospis został zaimportowany!", "success");
-            } else {
-                showPremiumAlert("Błąd importu jadłospisu", "error");
-            }
-        })
-        .catch(() => {
-            showPremiumAlert("Błąd połączenia z serwerem", "error");
-        });
+async function importProgman() {
+
+    //const weeks = document.getElementById("weeksToImport").value;
+    const fromDate = document.getElementById("importFromDate").value;
+    const status = document.getElementById("progmanStatus");
+
+    try {
+        //const response = await fetch("/progman/import?weeks=" + weeks, {method: "POST"});
+        const response = await fetch("/progman/import?fromDate=" + fromDate, {method: "POST"});
+        const text = await response.text();
+        console.log("STATUS:", response.status);
+        console.log("ODPOWIEDZ:", text);
+        status.innerHTML = response.status + " : " + text;
+        window.location.href = "/";
+    } catch (e) {
+        console.error(e);
+        status.innerHTML = "JS ERROR: " + e;
+    }
+}
+
+async function resetEntries() {
+
+    if (!confirm("Usunąć wszystkie wpisy?")) {
+        return;
+    }
+
+    const response = await fetch("/reset", {
+        method: "POST"
+    });
+
+    const text = await response.text();
+
+    console.log(text);
+
+    if (response.ok) {
+        location.reload();
+    }
 }

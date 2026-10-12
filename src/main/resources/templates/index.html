@@ -194,19 +194,68 @@
             </form>
         </div>
 
-  <!--      <div class="premium-form" style="margin-top: 20px;">
-            <h2 class="title-premium">Import jadłospisu ze strony żłobka</h2>
+        <div class="premium-form" style="margin-top:20px;">
 
-            <button type="button" class="premium-btn" onclick="importMenu()">Importuj jadłospis</button>
+            <h2 class="title-premium">
+                🌐 Import z iOpłatyEdu
+            </h2>
 
-            &lt;!&ndash; ⭐ Premium Alert tuż pod przyciskiem &ndash;&gt;
-            <div id="import-alert" class="premium-alert" style="display:none;"></div>
-        </div>-->
+            <p style="
+        color:#555;
+        margin-bottom:20px;
+        line-height:1.6;
+    ">
+                Automatyczne logowanie do iOpłatyEdu i pobieranie
+                kolejnych tygodni jadłospisu bez używania OCR.
+            </p>
 
-        <a href="/pdf/food-entries" class="pdf-btn">
-            <img src="/icons/pdf.svg" class="pdf-icon">
-            Pobierz PDF
-        </a>
+            <label for="importFromDate">
+                Importuj wpisy od dnia:
+            </label>
+
+            <div class="import-row">
+
+                <input
+                        type="date"
+                        id="importFromDate"
+                        class="premium-date"
+                        value="2026-09-01">
+
+                <button
+                        type="button"
+                        class="premium-btn"
+                        onclick="importProgman()">
+
+                    Importuj z iOpłatyEdu
+
+                </button>
+
+            </div>
+
+            <div id="progmanStatus"
+                 style="
+            margin-top:15px;
+            min-height:24px;
+            text-align:center;
+            font-weight:600;
+         ">
+            </div>
+
+        </div>
+
+        <div class="pdf-actions">
+            <a href="#"
+               class="pdf-btn"
+               onclick="resetEntries(); return false;">
+                <img src="/icons/trash.svg" class="pdf-icon">
+                Wyczyść wpisy
+            </a>
+
+            <a href="/pdf/food-entries" class="pdf-btn">
+                <img src="/icons/pdf.svg" class="pdf-icon">
+                Pobierz PDF
+            </a>
+        </div>
 
     </div>
 
