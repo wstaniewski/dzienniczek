@@ -15,8 +15,10 @@ gcloud config set project "${PROJECT_ID}"
 
 # === CHECK DOCKER DAEMON ===
 echo ">> Checking Docker daemon..."
+
 if ! docker info >/dev/null 2>&1; then
     echo "⚠ Docker is not running. Starting Docker Desktop..."
+
     open -a Docker
 
     for i in {1..30}; do
@@ -24,29 +26,47 @@ if ! docker info >/dev/null 2>&1; then
             echo "✔ Docker is now running."
             break
         fi
+
         echo "   Waiting for Docker... ($i)"
         sleep 1
     done
 fi
 
 if ! docker info >/dev/null 2>&1; then
-    echo "❌ Docker daemon still not running. Attempting fallback build..."
+    echo "❌ Docker daemon still not running."
+    exit 1
 fi
 
 # === BUILD JAR ===
 echo ">> Building JAR..."
 mvn clean package -DskipTests
 
-# === BUILD DOCKER IMAGE ===
+if [ $? -ne 0 ]; then
+    echo "❌ Maven build failed."
+    exit 1
+fi
+
+# === BUILD IMAGE ===
 echo ">> Building Docker image: ${FULL_IMAGE}"
 docker build -t "${FULL_IMAGE}" .
 
-# === PUSH TO ARTIFACT REGISTRY ===
+if [ $? -ne 0 ]; then
+    echo "❌ Docker build failed."
+    exit 1
+fi
+
+# === PUSH IMAGE ===
 echo ">> Pushing image to Artifact Registry..."
 docker push "${FULL_IMAGE}"
 
-# === DEPLOY TO CLOUD RUN ===
+if [ $? -ne 0 ]; then
+    echo "❌ Docker push failed."
+    exit 1
+fi
+
+# === DEPLOY CLOUD RUN ===
 echo ">> Deploying to Cloud Run..."
+
 gcloud run deploy "${SERVICE_NAME}" \
   --image "${FULL_IMAGE}" \
   --platform managed \
@@ -54,6 +74,13 @@ gcloud run deploy "${SERVICE_NAME}" \
   --allow-unauthenticated \
   --port "${PORT}" \
   --memory "${MEMORY}" \
-  --cpu "${CPU}"
+  --cpu "${CPU}" \
+  --set-env-vars="PROGMAN_UNIT=${PROGMAN_UNIT},PROGMAN_USERNAME=${PROGMAN_USERNAME},PROGMAN_PASSWORD=${PROGMAN_PASSWORD},PROGMAN_CHILD_ID=${PROGMAN_CHILD_ID}"
 
-echo ">> Deployment complete!"
+if [ $? -ne 0 ]; then
+    echo "❌ Cloud Run deployment failed."
+    exit 1
+fi
+
+echo ""
+echo "✅ Deployment complete!"

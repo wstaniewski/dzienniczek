@@ -6,16 +6,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProgmanProperties {
 
-    @Value("${progman.unit}")
+    @Value("${PROGMAN_UNIT:}")
     private String unit;
 
-    @Value("${progman.username}")
+    @Value("${PROGMAN_USERNAME:}")
     private String username;
 
-    @Value("${progman.password}")
+    @Value("${PROGMAN_PASSWORD:}")
     private String password;
 
-    @Value("${progman.childId}")
+    @Value("${PROGMAN_CHILD_ID:}")
     private String childId;
 
     public String getUnit() {
