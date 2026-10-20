@@ -1,12 +1,22 @@
 /* --- 3 RÓWNE KOLUMNY --- */
 .layout-three-columns {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns:
+            minmax(280px, 1fr)
+            minmax(280px, 1fr)
+            minmax(280px, 1fr);
     gap: 30px;
     width: 100%;
-    max-width: 1600px;
+    max-width: 1800px;
     margin: 0 auto;
     text-align: center;
+    align-items: start;
+}
+
+.left-column,
+.middle-column,
+.right-column {
+    min-width: 0;
 }
 
 /* LEWA KOLUMNA — WPISY SKROLUJĄ SIĘ */
@@ -29,10 +39,10 @@ body {
     font-family: 'Inter', Arial, sans-serif;
     background: #f5f7fa;
     margin: 0;
-    padding: 40px 0;
+    padding: 40px 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
 }
 
 /* RAMKI */
@@ -42,8 +52,10 @@ body {
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     overflow: hidden;
-    height: auto;          /* dynamiczna wysokość */
-    min-height: 200px;     /* żeby ramka nie była zbyt mała */
+    height: auto;
+    min-height: 200px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* INPUTY — wyrównane marginesy */
@@ -157,7 +169,8 @@ label {
 
 /* PREMIUM FILTR WPISÓW */
 .filter-select {
-    width: 240px;
+    width: 100%;
+    max-width: 240px;
     padding: 12px 16px;
     border-radius: 12px;
     border: 2px solid #3498db;
@@ -372,6 +385,59 @@ label {
 
 .snackbar-error {
     background-color: #E53935;
+}
+
+img {
+    max-width: 100%;
+}
+
+.import-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.import-row .premium-date {
+    flex: 1;
+    min-width: 0;
+}
+
+.import-row .premium-btn {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+
+    .layout-three-columns {
+        gap: 12px;
+    }
+
+    .premium-form {
+        padding: 12px;
+    }
+
+    .entry-item {
+        padding: 8px;
+    }
+
+    .entry-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .form-input {
+        font-size: 13px;
+    }
+
+    .premium-btn,
+    .pdf-btn {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .day-header h3 {
+        font-size: 14px;
+    }
 }
 
 /* Kolory kart */
