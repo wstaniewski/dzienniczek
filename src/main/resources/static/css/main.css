@@ -13,17 +13,16 @@
     align-items: start;
 }
 
-.left-column,
 .middle-column,
 .right-column {
-    min-height: 400px;
+    position: static;
+    top: auto;
+    height: auto;
 }
 
 /* LEWA KOLUMNA — WPISY SKROLUJĄ SIĘ */
 .left-column {
     overflow-y: auto;
-    max-height: calc(100vh - 80px); /* dynamiczna wysokość */
-    padding-right: 10px;
 }
 
 /* ŚRODKOWA I PRAWA — STICKY */
@@ -438,6 +437,44 @@ img {
     .day-header h3 {
         font-size: 14px;
     }
+}
+
+.accordion {
+    margin-bottom: 16px;
+}
+
+.accordion summary {
+    cursor: pointer;
+
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+
+    font-size: 22px;
+    font-weight: 600;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+    list-style: none;
+}
+
+.accordion summary::-webkit-details-marker {
+    display: none;
+}
+
+.accordion:not([open]) .premium-form {
+    display: none;
+}
+
+.accordion summary::before {
+    content: "▶";
+    margin-right: 10px;
+    display: inline-block;
+    transition: .2s;
+}
+
+.accordion[open] summary::before {
+    transform: rotate(90deg);
 }
 
 /* Kolory kart */
