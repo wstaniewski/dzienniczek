@@ -1,6 +1,8 @@
 package com.mobilernd.dzienniczek.controller;
 
 import com.mobilernd.dzienniczek.model.FoodEntry;
+import com.mobilernd.dzienniczek.model.ImportStatus;
+import com.mobilernd.dzienniczek.repository.ImportStatusRepository;
 import com.mobilernd.dzienniczek.service.FoodEntryService;
 import com.mobilernd.dzienniczek.service.OcrImportService;
 import com.mobilernd.dzienniczek.service.ProgmanImportService;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,11 +24,13 @@ public class FoodEntryController {
     private final FoodEntryService service;
     private final OcrImportService ocrImportService;
     private final ProgmanImportService progmanImportService;
+    private final ImportStatusRepository importStatusRepository;
 
-    public FoodEntryController(FoodEntryService service, OcrImportService ocrImportService, ProgmanImportService progmanImportService) {
+    public FoodEntryController(FoodEntryService service, OcrImportService ocrImportService, ProgmanImportService progmanImportService, ImportStatusRepository importStatusRepository) {
         this.service = service;
         this.ocrImportService = ocrImportService;
         this.progmanImportService = progmanImportService;
+        this.importStatusRepository = importStatusRepository;
     }
 
     @GetMapping("/")
@@ -45,6 +50,11 @@ public class FoodEntryController {
                         (a, b) -> a,
                         java.util.LinkedHashMap::new
                 ));
+
+        LocalDateTime lastImportDate = importStatusRepository.findById("PROGMAN")
+                .map(ImportStatus::getLastImportDate)
+                .orElse(null);
+        model.addAttribute("lastImportDate", lastImportDate);
 
         model.addAttribute("foodEntry", new FoodEntry());
         model.addAttribute("entriesByDate", entriesByDate);
@@ -159,28 +169,14 @@ public class FoodEntryController {
         }
     }
 
-/*    @PostMapping("/progman/import")
-    @ResponseBody
-    public String importProgman(@RequestParam(defaultValue = "10") int weeks) {
-
-        try {
-            int imported = progmanImportService.importWeeks(weeks);
-            return "Zaimportowano: " + imported;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getClass().getName()
-                    + " -> "
-                    + e.getMessage();
-        }
-    }*/
-
     @PostMapping("/progman/import")
     @ResponseBody
     public String importProgman(@RequestParam String fromDate) {
 
         try {
             int imported = progmanImportService.importFromDate(LocalDate.parse(fromDate));
+            LocalDateTime lastImportDate = LocalDateTime.now();
+            importStatusRepository.save(new ImportStatus("PROGMAN", lastImportDate));
             return "Zaimportowano: " + imported;
 
         } catch (Exception e) {
@@ -199,4 +195,13 @@ public class FoodEntryController {
 
         return "OK";
     }
+
+/*    @GetMapping("/food-diary")
+    public String foodDiary(Model model) {
+        LocalDateTime lastImportDate = importStatusRepository.findById("PROGMAN")
+                .map(ImportStatus::getLastImportDate)
+                .orElse(null);
+        model.addAttribute("lastImportDate", lastImportDate);
+        return "index";
+    }*/
 }

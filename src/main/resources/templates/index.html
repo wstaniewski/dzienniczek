@@ -202,6 +202,17 @@
             </a>
         </div>
         </details>
+
+        <div>
+                Ostatni import:
+            <span th:if="${lastImportDate != null}"
+                  th:text="${#temporals.format(lastImportDate, 'dd.MM.yyyy HH:mm')}">
+        </span>
+            <span th:if="${lastImportDate == null}">
+                Brak wykonanego importu
+            </span>
+        </div>
+
     </div>
 
     <!-- PRAWA KOLUMNA — EDYTUJ WPIS -->
