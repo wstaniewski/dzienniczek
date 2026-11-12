@@ -16,7 +16,7 @@
 .left-column,
 .middle-column,
 .right-column {
-    min-width: 0;
+    min-height: 400px;
 }
 
 /* LEWA KOLUMNA — WPISY SKROLUJĄ SIĘ */
