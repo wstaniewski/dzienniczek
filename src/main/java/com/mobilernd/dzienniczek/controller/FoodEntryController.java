@@ -6,6 +6,7 @@ import com.mobilernd.dzienniczek.repository.ImportStatusRepository;
 import com.mobilernd.dzienniczek.service.FoodEntryService;
 import com.mobilernd.dzienniczek.service.OcrImportService;
 import com.mobilernd.dzienniczek.service.ProgmanImportService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +17,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
+@Slf4j
 public class FoodEntryController {
 
     private final FoodEntryService service;
@@ -187,21 +190,26 @@ public class FoodEntryController {
         }
     }
 
+    @PostMapping("/progman/import-auto")
+    public ResponseEntity<String> importAuto() {
+
+        Optional<ImportStatus> status = importStatusRepository.findById("PROGMAN");
+        if (status.isPresent() && status.get().getLastImportDate().isAfter(LocalDateTime.now().minusHours(23))) {
+
+            log.info("Import już był wykonany");
+            return ResponseEntity.ok("SKIPPED");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        int imported = progmanImportService.importFromDate(now.toLocalDate().minusDays(1));
+        importStatusRepository.save(new ImportStatus("PROGMAN", now));
+        return ResponseEntity.ok("Zaimportowano " + imported);
+    }
+
     @PostMapping("/reset")
     @ResponseBody
     public String resetAll() {
-
         service.deleteAll();
-
         return "OK";
     }
-
-/*    @GetMapping("/food-diary")
-    public String foodDiary(Model model) {
-        LocalDateTime lastImportDate = importStatusRepository.findById("PROGMAN")
-                .map(ImportStatus::getLastImportDate)
-                .orElse(null);
-        model.addAttribute("lastImportDate", lastImportDate);
-        return "index";
-    }*/
 }
