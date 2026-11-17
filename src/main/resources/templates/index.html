@@ -18,6 +18,7 @@
         <form action="/filter" method="get" class="filter-form">
             <select name="meal" class="filter-select" onchange="this.form.submit()">
                 <option th:selected="${selectedFilter == 'Wszystkie'}">Wszystkie</option>
+                <option value="pierwsze śniadanie" th:selected="${selectedFilter == 'pierwsze śniadanie'}">Pierwsze śniadanie</option>
                 <option value="śniadanie" th:selected="${selectedFilter == 'śniadanie'}">Śniadanie</option>
                 <option value="obiad" th:selected="${selectedFilter == 'obiad'}">Obiad</option>
                 <option value="kolacja" th:selected="${selectedFilter == 'kolacja'}">Kolacja</option>
@@ -41,16 +42,18 @@
 
                     <div th:each="entry : ${day.value}"
                          class="entry-item premium-card"
-                         th:classappend="${entry.mealType == 'śniadanie' ? ' meal-breakfast' :
+                         th:classappend="${entry.mealType == 'pierwsze śniadanie' ? ' meal-first-breakfast' :
+                                         (entry.mealType == 'śniadanie' ? ' meal-breakfast' :
                                          (entry.mealType == 'obiad' ? ' meal-lunch' :
                                          (entry.mealType == 'kolacja' ? ' meal-dinner' :
-                                         (entry.mealType == 'przekąska' ? ' meal-snack' : ' meal-other')))}">
+                                         (entry.mealType == 'przekąska' ? ' meal-snack' : ' meal-other'))))}">
 
                         <img class="entry-icon"
-                             th:src="${entry.mealType == 'śniadanie' ? '/icons/breakfast.svg' :
+                             th:src="${entry.mealType == 'pierwsze śniadanie' ? '/icons/firstbreakfast.svg' :
+                                     (entry.mealType == 'śniadanie' ? '/icons/breakfast.svg' :
                                      (entry.mealType == 'obiad' ? '/icons/lunch.svg' :
                                      (entry.mealType == 'kolacja' ? '/icons/dinner.svg' :
-                                     (entry.mealType == 'przekąska' ? '/icons/snack.svg' : '/icons/other.svg')))}">
+                                     (entry.mealType == 'przekąska' ? '/icons/snack.svg' : '/icons/other.svg'))))}">
 
                         <div class="entry-content">
                             <strong th:text="${entry.mealName}"></strong> —
@@ -97,6 +100,7 @@
 
                 <label>Rodzaj posiłku:</label>
                 <select th:field="*{mealName}" class="meal-select-with-icon form-input" id="mealSelect" required>
+                    <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
                     <option value="Śniadanie">Śniadanie</option>
                     <option value="Obiad">Obiad</option>
                     <option value="Kolacja">Kolacja</option>
@@ -228,6 +232,7 @@
 
                 <label>Rodzaj posiłku:</label>
                 <select id="edit-mealName" name="mealName" class="meal-select-with-icon form-input" required>
+                    <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
                     <option value="Śniadanie">Śniadanie</option>
                     <option value="Obiad">Obiad</option>
                     <option value="Kolacja">Kolacja</option>

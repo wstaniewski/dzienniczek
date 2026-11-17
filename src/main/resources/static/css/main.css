@@ -478,8 +478,9 @@ img {
 }
 
 /* Kolory kart */
-.meal-breakfast { border-left: 10px solid #f1c40f; }
-.meal-lunch     { border-left: 10px solid #2ecc71; }
-.meal-dinner    { border-left: 10px solid #34495e; }
-.meal-snack     { border-left: 10px solid #e67e22; }
-.meal-other     { border-left: 10px solid #95a5a6; }
+.meal-first-breakfast { border-left: 10px solid #5DADE2; }
+.meal-breakfast       { border-left: 10px solid #f1c40f; }
+.meal-lunch           { border-left: 10px solid #2ecc71; }
+.meal-dinner          { border-left: 10px solid #34495e; }
+.meal-snack           { border-left: 10px solid #e67e22; }
+.meal-other           { border-left: 10px solid #95a5a6; }

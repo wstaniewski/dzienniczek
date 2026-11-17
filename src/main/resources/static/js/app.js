@@ -3,6 +3,7 @@ const editSelect = document.getElementById('edit-mealName');
 const dateField = document.getElementById('dateField');
 
 const icons = {
+    "Pierwsze śniadanie": "/icons/firstbreakfast.svg",
     "Śniadanie": "/icons/breakfast.svg",
     "Obiad": "/icons/lunch.svg",
     "Kolacja": "/icons/dinner.svg",

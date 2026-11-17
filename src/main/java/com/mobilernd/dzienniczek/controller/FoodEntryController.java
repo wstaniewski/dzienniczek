@@ -69,6 +69,8 @@ public class FoodEntryController {
     @PostMapping("/save")
     public String save(FoodEntry entry, Model model) {
 
+        entry.setMealType(entry.getMealName().toLowerCase());
+
         if (!service.isMealUniqueForDay(entry)) {
 
             List<FoodEntry> entries = service.findAllSorted();
@@ -90,6 +92,17 @@ public class FoodEntryController {
 
             return "index";
         }
+        entry.setDayName(
+                switch (entry.getDate().getDayOfWeek()) {
+                    case MONDAY -> "Poniedziałek";
+                    case TUESDAY -> "Wtorek";
+                    case WEDNESDAY -> "Środa";
+                    case THURSDAY -> "Czwartek";
+                    case FRIDAY -> "Piątek";
+                    case SATURDAY -> "Sobota";
+                    case SUNDAY -> "Niedziela";
+                }
+        );
 
         service.save(entry);
         return "redirect:/";
