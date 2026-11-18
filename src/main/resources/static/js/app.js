@@ -140,3 +140,73 @@ async function resetEntries() {
         location.reload();
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const fabMain = document.getElementById("fabMain");
+
+    const fabMenu = document.getElementById("fabMenu");
+
+    if (fabMain && fabMenu) {
+
+        fabMain.addEventListener("click", () => {
+
+            fabMenu.classList.toggle("open");
+
+        });
+    }
+});
+
+document.addEventListener("click", (e) => {
+
+    const foodModal = document.getElementById("foodModal");
+
+    const photoModal = document.getElementById("photoImportModal");
+
+    const progmanModal = document.getElementById("progmanModal");
+
+    if (e.target === foodModal) {
+        closeFoodModal();
+    }
+
+    if (e.target === photoModal) {
+        closePhotoImportModal();
+    }
+
+    if (e.target === progmanModal) {
+        closeProgmanModal();
+    }
+});
+
+function openFoodModal() {
+    document.getElementById("foodModal").style.display = "flex";
+}
+
+function closeFoodModal() {
+    document.getElementById("foodModal").style.display = "none";
+}
+
+function openPhotoImportModal() {
+
+    document.getElementById("photoImportModal").style.display = "flex";
+}
+
+function closePhotoImportModal() {
+
+    document.getElementById("photoImportModal").style.display = "none";
+}
+
+function openProgmanModal() {
+
+    document.getElementById("progmanModal").style.display = "flex";
+}
+
+function closeProgmanModal() {
+
+    document.getElementById("progmanModal").style.display = "none";
+}
+
+function downloadPdf() {
+
+    window.open("/pdf/food-entries", "_blank");
+}
