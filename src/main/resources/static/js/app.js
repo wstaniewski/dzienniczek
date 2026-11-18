@@ -153,6 +153,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             fabMenu.classList.toggle("open");
 
+            const page = document.getElementById("pageContent");
+
+            if (!page) {
+                return;
+            }
+
+            if (fabMenu.classList.contains("open")) {
+                page.classList.add("blurred");
+            } else {
+                page.classList.remove("blurred");
+            }
         });
     }
 });
