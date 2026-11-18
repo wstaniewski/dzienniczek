@@ -1,6 +1,7 @@
 const select = document.getElementById('mealSelect');
 const editSelect = document.getElementById('edit-mealName');
 const dateField = document.getElementById('dateField');
+const filterSelect = document.getElementById("filterSelect");
 
 const icons = {
     "Pierwsze śniadanie": "/icons/firstbreakfast.svg",
@@ -8,7 +9,14 @@ const icons = {
     "Obiad": "/icons/lunch.svg",
     "Kolacja": "/icons/dinner.svg",
     "Przekąska": "/icons/snack.svg",
-    "Inne": "/icons/other.svg"
+    "Inne": "/icons/other.svg",
+
+    "pierwsze śniadanie": "/icons/firstbreakfast.svg",
+    "śniadanie": "/icons/breakfast.svg",
+    "obiad": "/icons/lunch.svg",
+    "kolacja": "/icons/dinner.svg",
+    "przekąska": "/icons/snack.svg",
+    "inne": "/icons/other.svg"
 };
 
 function updateSelectIcon() {
@@ -22,12 +30,19 @@ function updateEditSelectIcon() {
         editSelect.style.backgroundImage = `url('${icons[editSelect.value]}')`;
     }
 }
+function updateFilterIcon() {
+    if (filterSelect) {
+        filterSelect.style.backgroundImage = `url('${icons[filterSelect.value]}')`;
+    }
+}
 
 updateSelectIcon();
 updateEditSelectIcon();
+updateFilterIcon();
 
 if (select) select.addEventListener('change', updateSelectIcon);
 if (editSelect) editSelect.addEventListener('change', updateEditSelectIcon);
+if (filterSelect) filterSelect.addEventListener('change', updateFilterIcon);
 
 /* Ustawianie daty */
 if (dateField) {
@@ -57,7 +72,10 @@ function openEdit(id, mealName, calories, date, description) {
     document.getElementById('edit-date').value = date;
     document.getElementById('edit-description').value = description;
 
-    document.getElementById('edit-section').style.display = 'block';
+    //document.getElementById('edit-section').style.display = 'block';
+
+    document.getElementById("editFoodModal").style.display = "flex";
+    document.getElementById("pageContent").classList.add("blurred");
 }
 
 function closeEdit() {
@@ -196,6 +214,16 @@ function openFoodModal() {
 
 function closeFoodModal() {
     document.getElementById("foodModal").style.display = "none";
+    document.getElementById("pageContent").classList.remove("blurred");
+}
+
+function openEditFoodModal() {
+    document.getElementById("editFoodModal").style.display = "flex";
+    document.getElementById("pageContent").classList.add("blurred");
+}
+
+function closeEditFoodModal() {
+    document.getElementById("editFoodModal").style.display = "none";
     document.getElementById("pageContent").classList.remove("blurred");
 }
 

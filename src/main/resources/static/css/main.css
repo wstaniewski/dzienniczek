@@ -203,8 +203,8 @@ label {
 
 .entry-item {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    align-items: flex-start;
+    gap: 16px;
     width: 100%;
     background: #fff;
     padding: 18px;
@@ -292,15 +292,15 @@ label {
 
 .entry-actions {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-left: auto;
-    flex-shrink: 0;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
 }
 
 .entry-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
+    margin-top: 2px;
 }
 
 .day-header h3 {
