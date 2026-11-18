@@ -1,3 +1,6 @@
+* {
+    box-sizing: border-box;
+}
 
 .main-layout {
     width: 100%;
@@ -9,6 +12,8 @@
     width: 100%;
     max-width: none;
     overflow-y: visible;
+    padding: 0 12px;
+    box-sizing: border-box;
 }
 
 /* GŁÓWNY KONTAINER */
@@ -205,6 +210,7 @@ label {
     padding: 18px;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-sizing: border-box;
 }
 
 .premium-alert {
@@ -560,6 +566,11 @@ img {
     color: #2c3e50;
 
     z-index: 5000;
+}
+
+.blurred {
+    filter: blur(4px);
+    transition: .2s;
 }
 
 /* Kolory kart */

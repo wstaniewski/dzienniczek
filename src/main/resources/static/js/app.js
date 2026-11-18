@@ -180,33 +180,34 @@ document.addEventListener("click", (e) => {
 
 function openFoodModal() {
     document.getElementById("foodModal").style.display = "flex";
+    document.getElementById("pageContent").classList.add("blurred");
 }
 
 function closeFoodModal() {
     document.getElementById("foodModal").style.display = "none";
+    document.getElementById("pageContent").classList.remove("blurred");
 }
 
 function openPhotoImportModal() {
-
     document.getElementById("photoImportModal").style.display = "flex";
+    document.getElementById("pageContent").classList.add("blurred");
 }
 
 function closePhotoImportModal() {
-
     document.getElementById("photoImportModal").style.display = "none";
+    document.getElementById("pageContent").classList.remove("blurred");
 }
 
 function openProgmanModal() {
-
     document.getElementById("progmanModal").style.display = "flex";
+    document.getElementById("pageContent").classList.add("blurred");
 }
 
 function closeProgmanModal() {
-
     document.getElementById("progmanModal").style.display = "none";
+    document.getElementById("pageContent").classList.remove("blurred");
 }
 
 function downloadPdf() {
-
     window.open("/pdf/food-entries", "_blank");
 }
