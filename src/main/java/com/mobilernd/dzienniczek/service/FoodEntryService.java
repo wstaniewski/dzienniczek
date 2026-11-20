@@ -20,6 +20,25 @@ public class FoodEntryService {
     }
 
     public void save(FoodEntry entry) {
+
+        if (entry.getMealName() != null) {
+            entry.setMealType(entry.getMealName().toLowerCase());
+        }
+
+        if (entry.getDate() != null) {
+            entry.setDayName(
+                    switch (entry.getDate().getDayOfWeek()) {
+                        case MONDAY -> "Poniedziałek";
+                        case TUESDAY -> "Wtorek";
+                        case WEDNESDAY -> "Środa";
+                        case THURSDAY -> "Czwartek";
+                        case FRIDAY -> "Piątek";
+                        case SATURDAY -> "Sobota";
+                        case SUNDAY -> "Niedziela";
+                    }
+            );
+        }
+
         foodEntryRepository.save(entry);
     }
 
@@ -34,9 +53,9 @@ public class FoodEntryService {
         return foodEntryRepository.findByMealType(mealName);
     }
 
-    public FoodEntry findById(Long id) {
+   /* public FoodEntry findById(Long id) {
         return foodEntryRepository.findById(id).orElse(null);
-    }
+    }*/
 
     public void delete(Long id) {
         foodEntryRepository.deleteById(id);
@@ -63,6 +82,11 @@ public class FoodEntryService {
         }
 
         return !exists;
+    }
+
+    public FoodEntry findById(Long id) {
+        return foodEntryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono wpisu: " + id));
     }
 
     public Map<LocalDate, List<FoodEntry>> findAllGroupedByDate() {

@@ -131,8 +131,35 @@ public class FoodEntryController {
         return "index";
     }
 
-
     @PostMapping("/update")
+    public String update(FoodEntry entry, Model model) {
+        System.out.println("ID=" + entry.getId());
+        System.out.println("mealName=" + entry.getMealName());
+        System.out.println("mealType=" + entry.getMealType());
+        System.out.println("dayName=" + entry.getDayName());
+        System.out.println("date=" + entry.getDate());
+
+        FoodEntry existing = service.findById(entry.getId());
+
+        existing.setMealName(entry.getMealName());
+        existing.setCalories(entry.getCalories());
+        existing.setDate(entry.getDate());
+        existing.setDescription(entry.getDescription());
+
+        if (!service.isMealUniqueForDay(existing)) {
+            model.addAttribute("foodEntry", existing);
+            model.addAttribute(
+                    "error",
+                    "Na ten dzień taki posiłek już istnieje."
+            );
+            return "index";
+        }
+
+        service.save(existing);
+
+        return "redirect:/";
+    }
+  /*  @PostMapping("/update")
     public String update(FoodEntry entry, Model model) {
 
         if (!service.isMealUniqueForDay(entry)) {
@@ -143,7 +170,7 @@ public class FoodEntryController {
 
         service.save(entry);
         return "redirect:/";
-    }
+    }*/
 
     @GetMapping("/filter")
     public String filter(@RequestParam String meal, Model model) {

@@ -71,9 +71,6 @@ function openEdit(id, mealName, calories, date, description) {
     document.getElementById('edit-calories').value = calories;
     document.getElementById('edit-date').value = date;
     document.getElementById('edit-description').value = description;
-
-    //document.getElementById('edit-section').style.display = 'block';
-
     document.getElementById("editFoodModal").style.display = "flex";
     document.getElementById("pageContent").classList.add("blurred");
 }
