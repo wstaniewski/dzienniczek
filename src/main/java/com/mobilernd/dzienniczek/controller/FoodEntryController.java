@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -38,29 +35,13 @@ public class FoodEntryController {
 
     @GetMapping("/")
     public String index(Model model) {
-
-        // ⭐ Pobieramy posortowane wpisy
-        List<FoodEntry> entries = service.findAllSorted();
-
-        // ⭐ Grupowanie po dacie + sortowanie dat malejąco
-        Map<LocalDate, List<FoodEntry>> entriesByDate = entries.stream()
-                .collect(Collectors.groupingBy(FoodEntry::getDate))
-                .entrySet().stream()
-                .sorted(Map.Entry.<LocalDate, List<FoodEntry>>comparingByKey().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (a, b) -> a,
-                        java.util.LinkedHashMap::new
-                ));
-
         LocalDateTime lastImportDate = importStatusRepository.findById("PROGMAN")
                 .map(ImportStatus::getLastImportDate)
                 .orElse(null);
         model.addAttribute("lastImportDate", lastImportDate);
 
         model.addAttribute("foodEntry", new FoodEntry());
-        model.addAttribute("entriesByDate", entriesByDate);
+        model.addAttribute("entriesByDate", service.entriesByDate(service.findAllSorted()));
         model.addAttribute("selectedFilter", "Wszystkie");
 
         return "index";
@@ -72,24 +53,9 @@ public class FoodEntryController {
         entry.setMealType(entry.getMealName().toLowerCase());
 
         if (!service.isMealUniqueForDay(entry)) {
-
-            List<FoodEntry> entries = service.findAllSorted();
-
-            Map<LocalDate, List<FoodEntry>> entriesByDate = entries.stream()
-                    .collect(Collectors.groupingBy(FoodEntry::getDate))
-                    .entrySet().stream()
-                    .sorted(Map.Entry.<LocalDate, List<FoodEntry>>comparingByKey().reversed())
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (a, b) -> a,
-                            java.util.LinkedHashMap::new
-                    ));
-
             model.addAttribute("foodEntry", entry);
-            model.addAttribute("entriesByDate", entriesByDate);
+            model.addAttribute("entriesByDate", service.entriesByDate(service.findAllSorted()));
             model.addAttribute("error", "Na ten dzień taki posiłek już istnieje.");
-
             return "index";
         }
         entry.setDayName(
@@ -159,40 +125,12 @@ public class FoodEntryController {
 
         return "redirect:/";
     }
-  /*  @PostMapping("/update")
-    public String update(FoodEntry entry, Model model) {
-
-        if (!service.isMealUniqueForDay(entry)) {
-            model.addAttribute("foodEntry", entry);
-            model.addAttribute("error", "Na ten dzień taki posiłek już istnieje.");
-            return "index";
-        }
-
-        service.save(entry);
-        return "redirect:/";
-    }*/
 
     @GetMapping("/filter")
     public String filter(@RequestParam String meal, Model model) {
-
-        List<FoodEntry> entries = service.filterByMeal(meal);
-
-        // ⭐ Grupowanie + sortowanie dat malejąco również w filtrze
-        Map<LocalDate, List<FoodEntry>> entriesByDate = entries.stream()
-                .collect(Collectors.groupingBy(FoodEntry::getDate))
-                .entrySet().stream()
-                .sorted(Map.Entry.<LocalDate, List<FoodEntry>>comparingByKey().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (a, b) -> a,
-                        java.util.LinkedHashMap::new
-                ));
-
         model.addAttribute("foodEntry", new FoodEntry());
-        model.addAttribute("entriesByDate", entriesByDate);
+        model.addAttribute("entriesByDate", service.entriesByDate(service.filterByMeal(meal)));
         model.addAttribute("selectedFilter", meal);
-
         return "index";
     }
 

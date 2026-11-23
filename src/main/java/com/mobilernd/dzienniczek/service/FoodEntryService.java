@@ -5,6 +5,8 @@ import com.mobilernd.dzienniczek.repository.FoodEntryRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,19 @@ public class FoodEntryService {
 
         if (entry.getMealName() != null) {
             entry.setMealType(entry.getMealName().toLowerCase());
+
+            switch (entry.getMealName()) {
+                case "Pierwsze śniadanie" ->
+                        entry.setMealTime(LocalTime.of(8,30));
+                case "Śniadanie" ->
+                        entry.setMealTime(LocalTime.of(11,0));
+                case "Obiad" ->
+                        entry.setMealTime(LocalTime.of(12,0));
+                case "Podwieczorek" ->
+                        entry.setMealTime(LocalTime.of(14,30));
+                case "Kolacja" ->
+                        entry.setMealTime(LocalTime.of(18,0));
+            }
         }
 
         if (entry.getDate() != null) {
@@ -43,19 +58,41 @@ public class FoodEntryService {
     }
 
     public List<FoodEntry> findAllSorted() {
-        return foodEntryRepository.findAllByOrderByDateDesc(); // lub Asc
+        return foodEntryRepository.findAllByOrderByDateDescMealTimeAsc(); // lub Asc
     }
 
     public List<FoodEntry> filterByMeal(String mealName) {
         if (mealName == null || mealName.equals("Wszystkie")) {
-            return foodEntryRepository.findAllByOrderByDateDesc();
+            return findAllSorted();
         }
         return foodEntryRepository.findByMealType(mealName);
     }
 
-   /* public FoodEntry findById(Long id) {
-        return foodEntryRepository.findById(id).orElse(null);
-    }*/
+    public Map<LocalDate, List<FoodEntry>> entriesByDate( List<FoodEntry> entries ){
+        return entries.stream()
+                .collect(Collectors.groupingBy(FoodEntry::getDate))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<LocalDate, List<FoodEntry>>comparingByKey().reversed())
+                .peek(day ->
+                        day.getValue().sort(
+                                Comparator
+                                        .comparingInt(this::mealOrder)
+                                        .thenComparing(
+                                                FoodEntry::getMealTime,
+                                                Comparator.nullsLast(
+                                                        Comparator.naturalOrder()
+                                                )
+                                        )
+                        )
+                )
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+    }
 
     public void delete(Long id) {
         foodEntryRepository.deleteById(id);
@@ -99,6 +136,19 @@ public class FoodEntryService {
 
     public void deleteAll() {
         foodEntryRepository.deleteAll();
+    }
+
+    private int mealOrder(FoodEntry entry) {
+        return switch (entry.getMealName()) {
+            case "Pierwsze śniadanie" -> 10;
+            case "Śniadanie" -> 20;
+            case "Obiad" -> 30;
+            case "Podwieczorek" -> 40;
+            case "Kolacja" -> 50;
+            case "Przekąska" -> 100;
+            case "Inne" -> 110;
+            default -> 999;
+        };
     }
 }
 

@@ -2,6 +2,7 @@ package com.mobilernd.dzienniczek.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 public class FoodEntry {
@@ -20,18 +21,21 @@ public class FoodEntry {
 
     private LocalDate date;
 
+    private LocalTime mealTime;
+
     @Column(length = 1000)
     private String description;
 
     public FoodEntry() {}
 
     public FoodEntry(String mealName, String mealType, String dayName,
-                     Integer calories, LocalDate date, String description) {
+                     Integer calories, LocalDate date, LocalTime mealTime, String description) {
         this.mealName = mealName;
         this.mealType = mealType;
         this.dayName = dayName;
         this.calories = calories;
         this.date = date;
+        this.mealTime = mealTime;
         this.description = description;
     }
 
@@ -56,6 +60,27 @@ public class FoodEntry {
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
 
+    public LocalTime getMealTime() {return mealTime;}
+
+    public void setMealTime(LocalTime mealTime) {this.mealTime = mealTime;}
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public int getMealOrder() {
+
+        return switch (getMealName()) {
+
+            case "Pierwsze śniadanie" -> 10;
+            case "Śniadanie" -> 20;
+            case "Obiad" -> 30;
+            case "Podwieczorek" -> 40;
+            case "Kolacja" -> 50;
+
+            case "Przekąska" -> 100;
+            case "Inne" -> 110;
+
+            default -> 999;
+        };
+    }
 }

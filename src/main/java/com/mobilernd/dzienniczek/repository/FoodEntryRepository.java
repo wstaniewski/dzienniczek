@@ -18,6 +18,8 @@ public interface FoodEntryRepository extends JpaRepository<FoodEntry, Long> {
 
     List<FoodEntry> findByMealNameOrderByDateDesc(String mealName);
 
+    List<FoodEntry> findAllByOrderByDateDescMealTimeAsc();
+
     List<FoodEntry> findByMealType(String mealType);
 
     Optional<FoodEntry> findByDateAndMealName(LocalDate date, String mealName);
