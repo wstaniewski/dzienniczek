@@ -23,6 +23,11 @@
                     <option value="Kolacja">Kolacja</option>
                     <option value="Przekąska">Przekąska</option>
                 </select>
+                <label>Godzina</label>
+                <input type="time"
+                       th:field="*{mealTime}"
+                       id="mealTime"
+                       class="form-input">
                 <label>Kalorie</label>
                 <input type="number"
                        th:field="*{calories}"

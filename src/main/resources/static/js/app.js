@@ -21,6 +21,31 @@ const icons = {
     "podwieczorek": "/icons/afternoonsnack.svg"
 };
 
+const mealTimes = {
+    "Pierwsze śniadanie": "07:30",
+    "Śniadanie": "08:30",
+    "Zupa": "11:00",
+    "Drugie danie": "12:00",
+    "Podwieczorek": "14:30",
+    "Kolacja": "18:00"
+};
+
+function updateMealTime() {
+
+    const select = document.getElementById("mealSelect");
+    const timeField = document.getElementById("mealTime");
+
+    if (!select || !timeField) {
+        return;
+    }
+
+    const defaultTime = mealTimes[select.value];
+
+    if (defaultTime) {
+        timeField.value = defaultTime;
+    }
+}
+
 function updateSelectIcon() {
     if (select) {
         select.style.backgroundImage = `url('${icons[select.value]}')`;
@@ -32,6 +57,7 @@ function updateEditSelectIcon() {
         editSelect.style.backgroundImage = `url('${icons[editSelect.value]}')`;
     }
 }
+
 function updateFilterIcon() {
     if (filterSelect) {
         filterSelect.style.backgroundImage = `url('${icons[filterSelect.value]}')`;
@@ -61,11 +87,12 @@ function openEditFromButton(btn) {
         btn.dataset.meal,
         btn.dataset.calories,
         btn.dataset.date,
+        btn.dataset.mealtime,
         btn.dataset.description || ""
     );
 }
 
-function openEdit(id, mealName, calories, date, description) {
+function openEdit(id, mealName, calories, date, mealTime, description) {
     document.getElementById('edit-id').value = id;
     editSelect.value = mealName;
     updateEditSelectIcon();
@@ -73,6 +100,7 @@ function openEdit(id, mealName, calories, date, description) {
     document.getElementById('edit-calories').value = calories;
     document.getElementById('edit-date').value = date;
     document.getElementById('edit-description').value = description;
+    document.getElementById("edit-mealTime").value = mealTime;
     document.getElementById("editFoodModal").style.display = "flex";
     document.getElementById("pageContent").classList.add("blurred");
 }
@@ -164,6 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fabMenu = document.getElementById("fabMenu");
 
+    const select = document.getElementById("mealSelect");
+
     if (fabMain && fabMenu) {
 
         fabMain.addEventListener("click", () => {
@@ -182,6 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 page.classList.remove("blurred");
             }
         });
+    }
+
+    if (select) {
+        select.addEventListener("change", updateMealTime);
+        updateMealTime();
     }
 });
 
