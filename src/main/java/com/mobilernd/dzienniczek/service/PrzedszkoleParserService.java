@@ -29,6 +29,85 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
             "krem", "barszcz", "żurek", "fasolowa", "grochowa"
     );
 
+    @Override
+    public List<FoodEntry> parse(String text) {
+
+        List<FoodEntry> allEntries = new ArrayList<>();
+
+        List<String> dayBlocks = splitIntoDayBlocks(text);
+
+        for (String dayText : dayBlocks) {
+
+            LocalDate currentDate = null;
+            String currentMeal = null;
+            StringBuilder currentDesc = new StringBuilder();
+            boolean inAllergenBlock = false;
+
+            for (String rawLine : dayText.split("\n")) {
+                String line = rawLine.trim();
+                if (line.isEmpty()) continue;
+
+                if (currentDate == null) {
+                    LocalDate d = parseDateFromHeader(line);
+                    if (d != null) {
+                        currentDate = d;
+                        continue;
+                    }
+                }
+
+                if (isFooter(line)) continue;
+
+                if (isAllergenHeader(line)) {
+                    inAllergenBlock = true;
+                    continue;
+                }
+
+                String meal = detectMeal(line);
+
+                if (meal != null && currentDate == null) {
+                    continue;
+                }
+
+                if (inAllergenBlock) {
+                    if (meal != null) {
+                        inAllergenBlock = false;
+
+                        addDinner(currentMeal, allEntries, currentDesc, currentDate);
+
+                        currentMeal = meal;
+                        currentDesc = new StringBuilder();
+
+                        String desc = extractDescription(line);
+                        if (!desc.isEmpty()) currentDesc.append(desc).append(" ");
+                    }
+                    continue;
+                }
+
+                if (meal != null) {
+                    addDinner(currentMeal, allEntries, currentDesc, currentDate);
+
+                    currentMeal = meal;
+                    currentDesc = new StringBuilder();
+
+                    String desc = extractDescription(line);
+                    if (!desc.isEmpty()) currentDesc.append(desc).append(" ");
+
+                    continue;
+                }
+
+                if (currentMeal != null) {
+                    currentDesc.append(line).append(" ");
+                }
+            }
+
+            if (currentMeal != null) {
+                addDinner(currentMeal, allEntries, currentDesc, currentDate);
+            }
+        }
+
+        return allEntries;
+    }
+
     private String normalize(String line) {
         return line.toLowerCase()
                 .replace("—", "-")
@@ -69,10 +148,10 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
 
         String key = m.group(1).toLowerCase();
 
-        if (key.startsWith("ii s") || key.startsWith("il s")) return "II śniadanie";
+        if (key.startsWith("ii s") || key.startsWith("il s")) return "Śniadanie";
         if (key.startsWith("śniad") || key.startsWith("sniad")) return "Śniadanie";
         if (key.startsWith("zupa")) return "Zupa";
-        if (key.startsWith("ii d") || key.startsWith("il d")) return "II danie";
+        if (key.startsWith("ii d") || key.startsWith("il d")) return "Drugie danie";
         if (key.startsWith("obiad")) return "Obiad";
         if (key.startsWith("podw") || key.startsWith("podwiecz")) return "Podwieczorek";
 
@@ -167,122 +246,6 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
         return blocks;
     }
 
-    @Override
-    public List<FoodEntry> parse(String text) {
-
-        List<FoodEntry> allEntries = new ArrayList<>();
-
-        List<String> dayBlocks = splitIntoDayBlocks(text);
-
-        for (String dayText : dayBlocks) {
-
-            LocalDate currentDate = null;
-            String currentMeal = null;
-            StringBuilder currentDesc = new StringBuilder();
-            boolean inAllergenBlock = false;
-
-            for (String rawLine : dayText.split("\n")) {
-                String line = rawLine.trim();
-                if (line.isEmpty()) continue;
-
-                if (currentDate == null) {
-                    LocalDate d = parseDateFromHeader(line);
-                    if (d != null) {
-                        currentDate = d;
-                        continue;
-                    }
-                }
-
-                if (isFooter(line)) continue;
-
-                if (isAllergenHeader(line)) {
-                    inAllergenBlock = true;
-                    continue;
-                }
-
-                String meal = detectMeal(line);
-
-                if (meal != null && currentDate == null) {
-                    continue;
-                }
-
-                if (inAllergenBlock) {
-                    if (meal != null) {
-                        inAllergenBlock = false;
-
-                        if (currentMeal != null) {
-                            allEntries.add(buildEntry(
-                                    resolveDayName(currentDate),
-                                    currentMeal,
-                                    currentDesc.toString().trim(),
-                                    currentDate
-                            ));
-                        }
-
-                        currentMeal = meal;
-                        currentDesc = new StringBuilder();
-
-                        String desc = extractDescription(line);
-                        if (!desc.isEmpty()) currentDesc.append(desc).append(" ");
-                    }
-                    continue;
-                }
-
-                if (meal != null) {
-
-                    if (currentMeal != null) {
-                        allEntries.add(buildEntry(
-                                resolveDayName(currentDate),
-                                currentMeal,
-                                currentDesc.toString().trim(),
-                                currentDate
-                        ));
-                    }
-
-                    currentMeal = meal;
-                    currentDesc = new StringBuilder();
-
-                    String desc = extractDescription(line);
-                    if (!desc.isEmpty()) currentDesc.append(desc).append(" ");
-
-                    continue;
-                }
-
-                if (currentMeal != null) {
-                    currentDesc.append(line).append(" ");
-                }
-            }
-
-            if (currentMeal != null) {
-
-                // 🔥 rozdzielanie zupy i II dania — niezależnie od nagłówków
-                String[] parts = splitSoupAndSecond(currentDesc.toString().trim());
-                String soup = parts[0];
-                String second = parts[1];
-
-                if (!soup.isEmpty()) {
-                    allEntries.add(buildEntry(
-                            resolveDayName(currentDate),
-                            "Zupa",
-                            soup,
-                            currentDate
-                    ));
-                }
-
-                if (!second.isEmpty()) {
-                    allEntries.add(buildEntry(
-                            resolveDayName(currentDate),
-                            "II danie",
-                            second,
-                            currentDate
-                    ));
-                }
-            }
-        }
-
-        return allEntries;
-    }
-
     private FoodEntry buildEntry(String day, String meal, String desc, LocalDate date) {
         FoodEntry entry = new FoodEntry();
         entry.setDayName(day);
@@ -296,6 +259,21 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
 
     private String resolveMealType(String mealName) {
         return switch (mealName) {
+            case "Pierwsze śniadanie" -> "pierwsze śniadanie";
+            case "Śniadanie" -> "śniadanie";
+            case "Zupa" -> "zupa";
+            case "Drugie danie" -> "drugie danie";
+            case "Podwieczorek" -> "podwieczorek";
+            case "Kolacja" -> "kolacja";
+            case "Przekąska" -> "przekąska";
+            default -> throw new IllegalStateException(
+                    "Nieobsługiwany posiłek: " + mealName
+            );
+        };
+    }
+
+ /*   private String resolveMealType(String mealName) {
+        return switch (mealName) {
             case "Śniadanie", "II śniadanie" -> "śniadanie";
             case "Zupa" -> "pierwsze_danie";
             case "II danie" -> "drugie_danie";
@@ -303,5 +281,44 @@ public class PrzedszkoleParserService implements OcrParserStrategy {
             case "Podwieczorek" -> "przekąska";
             default -> "inne";
         };
+    }*/
+
+    private void addDinner(String currentMeal, List<FoodEntry> allEntries, StringBuilder currentDesc, LocalDate currentDate) {
+        if (currentMeal != null) {
+
+            String description = currentDesc.toString().trim();
+
+            if ("Obiad".equals(currentMeal)) {
+
+                String[] parts = splitSoupAndSecond(description);
+
+                if (!parts[0].isBlank()) {
+                    allEntries.add(buildEntry(
+                            resolveDayName(currentDate),
+                            "Zupa",
+                            parts[0],
+                            currentDate
+                    ));
+                }
+
+                if (!parts[1].isBlank()) {
+                    allEntries.add(buildEntry(
+                            resolveDayName(currentDate),
+                            "Drugie danie",
+                            parts[1],
+                            currentDate
+                    ));
+                }
+
+            } else {
+
+                allEntries.add(buildEntry(
+                        resolveDayName(currentDate),
+                        currentMeal,
+                        description,
+                        currentDate
+                ));
+            }
+        }
     }
 }

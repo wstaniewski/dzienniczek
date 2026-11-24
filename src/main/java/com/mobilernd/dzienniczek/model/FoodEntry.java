@@ -70,46 +70,37 @@ public class FoodEntry {
     public String getIconPath() {
 
         if (mealType == null) {
-            throw new IllegalStateException(
-                    "mealType jest null dla wpisu id=" + id
-                            + ", mealName=" + mealName
-            );
+            throw new IllegalStateException("mealType jest null dla wpisu id=" + id + ", mealName=" + mealName);
         }
 
         return switch (mealType) {
-
             case "pierwsze śniadanie" -> "/icons/firstbreakfast.svg";
             case "śniadanie" -> "/icons/breakfast.svg";
-            case "obiad" -> "/icons/lunch.svg";
-            case "podwieczorek" -> "/icons/other.svg";
+            case "zupa" -> "/icons/soup.svg";
+            case "drugie danie" -> "/icons/secondcourse.svg";
+            case "podwieczorek" -> "/icons/afternoonsnack.svg";
             case "kolacja" -> "/icons/dinner.svg";
             case "przekąska" -> "/icons/snack.svg";
 
-            default -> throw new IllegalStateException(
-                    "Nieobsługiwany mealType: " + mealType);
+            default -> throw new IllegalStateException("Nieobsługiwany mealType: " + mealType);
         };
     }
 
     public String getCssClass() {
 
         if (mealType == null) {
-            throw new IllegalStateException(
-                    "mealType jest null dla wpisu id=" + id
-                            + ", mealName=" + mealName
-            );
+            throw new IllegalStateException("mealType jest null dla wpisu id=" + id + ", mealName=" + mealName);
         }
 
         return switch (mealType) {
-
             case "pierwsze śniadanie" -> "meal-first-breakfast";
             case "śniadanie" -> "meal-breakfast";
-            case "obiad" -> "meal-lunch";
-            case "podwieczorek" -> "meal-other";
+            case "zupa" -> "meal-soup";
+            case "drugie danie" -> "meal-second-course";
+            case "podwieczorek" -> "meal-afternoon-snack";
             case "kolacja" -> "meal-dinner";
             case "przekąska" -> "meal-snack";
-
-            default -> throw new IllegalStateException(
-                    "Nieobsługiwany mealType: " + mealType);
+            default -> throw new IllegalStateException("Nieobsługiwany mealType: " + mealType);
         };
     }
 }

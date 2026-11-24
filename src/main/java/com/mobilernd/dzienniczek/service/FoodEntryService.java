@@ -142,11 +142,11 @@ public class FoodEntryService {
         return switch (entry.getMealName()) {
             case "Pierwsze śniadanie" -> 10;
             case "Śniadanie" -> 20;
-            case "Obiad" -> 30;
-            case "Podwieczorek" -> 40;
-            case "Kolacja" -> 50;
+            case "Zupa" -> 30;
+            case "Drugie danie" -> 40;
+            case "Podwieczorek" -> 50;
+            case "Kolacja" -> 60;
             case "Przekąska" -> 100;
-            case "Inne" -> 110;
             default -> 999;
         };
     }

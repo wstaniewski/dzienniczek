@@ -26,17 +26,15 @@
         <h2 class="title-premium">Wpisy</h2>
 
         <form action="/filter" method="get" class="filter-form">
-            <select id="filterSelect" name="meal" class="meal-select-with-icon form-input"
-                    onchange="this.form.submit()">
+            <select id="filterSelect" name="meal" class="meal-select-with-icon form-input" onchange="this.form.submit()">
                 <option th:selected="${selectedFilter == 'Wszystkie'}">Wszystkie</option>
-                <option value="pierwsze śniadanie" th:selected="${selectedFilter == 'pierwsze śniadanie'}">Pierwsze
-                    śniadanie
-                </option>
+                <option value="pierwsze śniadanie" th:selected="${selectedFilter == 'pierwsze śniadanie'}">Pierwsze śniadanie</option>
                 <option value="śniadanie" th:selected="${selectedFilter == 'śniadanie'}">Śniadanie</option>
-                <option value="obiad" th:selected="${selectedFilter == 'obiad'}">Obiad</option>
+                <option value="zupa" th:selected="${selectedFilter == 'zupa'}">Zupa</option>
+                <option value="drugie danie" th:selected="${selectedFilter == 'drugie danie'}">Drugie danie</option>
+                <option value="podwieczorek" th:selected="${selectedFilter == 'podwieczorek'}">Podwieczorek</option>
                 <option value="kolacja" th:selected="${selectedFilter == 'kolacja'}">Kolacja</option>
                 <option value="przekąska" th:selected="${selectedFilter == 'przekąska'}">Przekąska</option>
-                <option value="podwieczorek" th:selected="${selectedFilter == 'podwieczorek'}">Podwieczorek</option>
             </select>
         </form>
 
@@ -120,10 +118,11 @@
                     class="meal-select-with-icon form-input">
                 <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
                 <option value="Śniadanie">Śniadanie</option>
-                <option value="Obiad">Obiad</option>
+                <option value="Zupa">Zupa</option>
+                <option value="Drugie danie">Drugie danie</option>
+                <option value="Podwieczorek">Podwieczorek</option>
                 <option value="Kolacja">Kolacja</option>
                 <option value="Przekąska">Przekąska</option>
-                <option value="Podwieczorek">Podwieczorek</option>
             </select>
             <label>Kalorie</label>
             <input type="number"
@@ -305,10 +304,11 @@
             <select id="edit-mealName" name="mealName" class="meal-select-with-icon form-input" required>
                 <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
                 <option value="Śniadanie">Śniadanie</option>
-                <option value="Obiad">Obiad</option>
+                <option value="Zupa">Zupa</option>
+                <option value="Drugie danie">Drugie danie</option>
+                <option value="Podwieczorek">Podwieczorek</option>
                 <option value="Kolacja">Kolacja</option>
                 <option value="Przekąska">Przekąska</option>
-                <option value="Podwieczorek">Podwieczorek</option>
             </select>
 
             <label>Kalorie:</label>

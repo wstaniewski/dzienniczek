@@ -34,21 +34,17 @@ public class ProgmanImportService {
     private final FoodEntryService foodEntryService;
     private final ProgmanProperties properties;
 
-    private final ObjectMapper mapper =
-            new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    private final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public int importFromDate(LocalDate fromDate) {
 
         CookieManager cookieManager = new CookieManager();
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-
         int imported = 0;
 
         try {
-
             HttpClient client = HttpClient.newBuilder()
                     .cookieHandler(cookieManager)
                     .followRedirects(HttpClient.Redirect.ALWAYS)
@@ -64,18 +60,9 @@ public class ProgmanImportService {
                     ).body();
 
             Document document = Jsoup.parse(loginPage);
-
-            String viewState =
-                    document.getElementById("__VIEWSTATE")
-                            .attr("value");
-
-            String eventValidation =
-                    document.getElementById("__EVENTVALIDATION")
-                            .attr("value");
-
-            String viewStateGenerator =
-                    document.getElementById("__VIEWSTATEGENERATOR")
-                            .attr("value");
+            String viewState = document.getElementById("__VIEWSTATE").attr("value");
+            String eventValidation = document.getElementById("__EVENTVALIDATION").attr("value");
+            String viewStateGenerator = document.getElementById("__VIEWSTATEGENERATOR").attr("value");
 
             String form =
                     "__VIEWSTATE=" + encode(viewState)
@@ -86,16 +73,13 @@ public class ProgmanImportService {
                             + "&ctl00$cphContent$txtPassword=" + encode(properties.getPassword())
                             + "&ctl00$cphContent$ButtonLogin=Zaloguj";
 
-            client.send(
-                    HttpRequest.newBuilder()
+            client.send(HttpRequest.newBuilder()
                             .uri(URI.create(LOGIN_URL))
                             .header(
                                     "Content-Type",
                                     "application/x-www-form-urlencoded"
                             )
-                            .POST(
-                                    HttpRequest.BodyPublishers.ofString(form)
-                            )
+                            .POST(HttpRequest.BodyPublishers.ofString(form))
                             .build(),
                     HttpResponse.BodyHandlers.ofString()
             );
@@ -107,9 +91,7 @@ public class ProgmanImportService {
                       "idDziecko":"%s",
                       "tydzien":%d
                     }
-                    """.formatted(
-                        properties.getChildId(),
-                        week
+                    """.formatted(properties.getChildId(), week
                 );
 
                 HttpResponse<String> response =
@@ -131,33 +113,17 @@ public class ProgmanImportService {
                                 HttpResponse.BodyHandlers.ofString()
                         );
 
-                JsonNode root =
-                        mapper.readTree(response.body());
-
-                JsonNode days =
-                        root.path("d")
-                                .path("ListK");
-
+                JsonNode root = mapper.readTree(response.body());
+                JsonNode days = root.path("d").path("ListK");
                 if (days.isEmpty()) {
-
-                    System.out.println(
-                            "Koniec dostępnych jadłospisów dla week="
-                                    + week
-                    );
-
+                    System.out.println("Koniec dostępnych jadłospisów dla week=" + week);
                     break;
                 }
 
                 boolean importedAnythingThisWeek = false;
 
                 for (JsonNode day : days) {
-
-                    LocalDate date =
-                            LocalDate.parse(
-                                    day.path("dzien_data").asText(),
-                                    formatter
-                            );
-
+                    LocalDate date = LocalDate.parse(day.path("dzien_data").asText(), formatter);
                     /*
                      * Pomijamy dni starsze niż data graniczna,
                      * ale NIE przerywamy całego tygodnia.
@@ -168,42 +134,47 @@ public class ProgmanImportService {
 
                     importedAnythingThisWeek = true;
 
-                    String dayName =
-                            capitalize(
-                                    day.path("dzien_tyg").asText()
-                            );
+                    String dayName = capitalize(day.path("dzien_tyg").asText());
+
+                   /* for (JsonNode meal : day.path("posilki")) {
+                        FoodEntry entry = new FoodEntry();
+                        entry.setDate(date);
+                        entry.setDayName(dayName);
+                        entry.setMealName(meal.path("Nazwa").asText());
+                        entry.setDescription(meal.path("Opis").asText());
+                        entry.setCalories(0);
+                        entry.setMealType(resolveMealType(meal.path("Nazwa").asText()));
+
+                        if (foodEntryService.isMealUniqueForDay(entry)) {
+                            foodEntryService.save(entry);
+                            imported++;
+                        }
+                    }*/
 
                     for (JsonNode meal : day.path("posilki")) {
 
-                        FoodEntry entry =
-                                new FoodEntry();
+                        String mealName = meal.path("Nazwa").asText();
+                        String description = meal.path("Opis").asText();
 
-                        entry.setDate(date);
+                        if ("Obiad".equalsIgnoreCase(mealName)) {
 
-                        entry.setDayName(dayName);
+                            String[] parts = splitSoupAndSecond(description);
+                            String soup = parts[0];
+                            String second = parts[1];
 
-                        entry.setMealName(
-                                meal.path("Nazwa").asText()
-                        );
+                            if (!soup.isBlank()) {
+                                saveMeal(date, dayName, "Zupa", soup);
+                                imported++;
+                            }
 
-                        entry.setDescription(
-                                meal.path("Opis").asText()
-                        );
-
-                        entry.setCalories(0);
-
-                        entry.setMealType(
-                                resolveMealType(
-                                        meal.path("Nazwa").asText()
-                                )
-                        );
-
-                        if (foodEntryService.isMealUniqueForDay(entry)) {
-
-                            foodEntryService.save(entry);
-
-                            imported++;
+                            if (!second.isBlank()) {
+                                saveMeal(date, dayName, "Drugie danie", second);
+                                imported++;
+                            }
+                            continue;
                         }
+                        saveMeal(date, dayName, mealName, description);
+                        imported++;
                     }
                 }
 
@@ -212,12 +183,7 @@ public class ProgmanImportService {
                  * >= fromDate, kończymy import.
                  */
                 if (!importedAnythingThisWeek) {
-
-                    System.out.println(
-                            "Osiągnięto datę graniczną: "
-                                    + fromDate
-                    );
-
+                    System.out.println("Osiągnięto datę graniczną: " + fromDate);
                     break;
                 }
             }
@@ -225,11 +191,7 @@ public class ProgmanImportService {
             return imported;
 
         } catch (Exception e) {
-
-            throw new RuntimeException(
-                    "Błąd importu iOpłatyEdu",
-                    e
-            );
+            throw new RuntimeException("Błąd importu iOpłatyEdu", e);
         }
     }
 
@@ -352,11 +314,14 @@ public class ProgmanImportService {
         return switch (mealName) {
             case "Pierwsze śniadanie" -> "pierwsze śniadanie";
             case "Śniadanie" -> "śniadanie";
-            case "Obiad" -> "obiad";
+            case "Zupa" -> "zupa";
+            case "Drugie danie" -> "drugie danie";
             case "Podwieczorek" -> "podwieczorek";
+            case "Kolacja" -> "kolacja";
             case "Przekąska" -> "przekąska";
-
-            default -> "inne";
+            default -> throw new IllegalStateException(
+                    "Nieobsługiwany posiłek: " + mealName
+            );
         };
     }
 
@@ -370,4 +335,35 @@ public class ProgmanImportService {
     private String encode(String value) {
         return URLEncoder.encode(value, UTF_8);
     }
+
+    private void saveMeal(LocalDate date, String dayName, String mealName, String description) {
+        FoodEntry entry = new FoodEntry();
+        entry.setDate(date);
+        entry.setDayName(dayName);
+        entry.setMealName(mealName);
+        entry.setDescription(description);
+        entry.setCalories(0);
+        entry.setMealType(resolveMealType(mealName));
+        if (foodEntryService.isMealUniqueForDay(entry)) {
+            foodEntryService.save(entry);
+        }
+    }
+
+    private String[] splitSoupAndSecond(String description) {
+
+        int comma = description.indexOf(",");
+
+        if (comma == -1) {
+            return new String[]{
+                    description.trim(),
+                    ""
+            };
+        }
+
+        return new String[]{
+                description.substring(0, comma).trim(),
+                description.substring(comma + 1).trim()
+        };
+    }
+
 }

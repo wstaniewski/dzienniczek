@@ -157,11 +157,12 @@ public class PdfService {
             String resourcePath = switch (mealType) {
                 case "pierwsze śniadanie" -> "/static/icons/firstbreakfast.svg";
                 case "śniadanie"          -> "/static/icons/breakfast.svg";
-                case "obiad"              -> "/static/icons/lunch.svg";
+                case "zupa"               -> "/static/icons/soup.svg";
+                case "drugie danie"       -> "/static/icons/secondcourse.svg";
                 case "kolacja"            -> "/static/icons/dinner.svg";
                 case "przekąska"          -> "/static/icons/snack.svg";
-                case "podwieczorek"       -> "/static/icons/other.svg";
-                default                   -> "/static/icons/other.svg";
+                case "podwieczorek"       -> "/static/icons/afternoonsnack.svg";
+                default                   -> "/static/icons/afternoonsnack.svg";
             };
 
             InputStream svgStream = getClass().getResourceAsStream(resourcePath);

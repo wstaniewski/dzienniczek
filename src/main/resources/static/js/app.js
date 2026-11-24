@@ -6,17 +6,19 @@ const filterSelect = document.getElementById("filterSelect");
 const icons = {
     "Pierwsze śniadanie": "/icons/firstbreakfast.svg",
     "Śniadanie": "/icons/breakfast.svg",
-    "Obiad": "/icons/lunch.svg",
+    "Zupa": "/icons/soup.svg",
+    "Drugie danie": "/icons/secondcourse.svg",
     "Kolacja": "/icons/dinner.svg",
     "Przekąska": "/icons/snack.svg",
-    "Podwieczorek": "/icons/other.svg",
+    "Podwieczorek": "/icons/afternoonsnack.svg",
 
     "pierwsze śniadanie": "/icons/firstbreakfast.svg",
     "śniadanie": "/icons/breakfast.svg",
-    "obiad": "/icons/lunch.svg",
+    "zupa": "/icons/soup.svg",
+    "drugie danie": "/icons/secondcourse.svg",
     "kolacja": "/icons/dinner.svg",
     "przekąska": "/icons/snack.svg",
-    "podwieczorek": "/icons/other.svg"
+    "podwieczorek": "/icons/afternoonsnack.svg"
 };
 
 function updateSelectIcon() {
