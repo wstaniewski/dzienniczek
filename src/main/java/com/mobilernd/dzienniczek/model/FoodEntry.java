@@ -13,7 +13,7 @@ public class FoodEntry {
 
     private String mealName;
 
-    private String mealType;   // typ posiłku (śniadanie / obiad / przekąska / inne)
+    private String mealType;   // typ posiłku (śniadanie / obiad / przekąska / podwieczorek / inne)
 
     private String dayName;    // NOWE POLE — dzień tygodnia (Poniedziałek, Wtorek...)
 
@@ -67,20 +67,49 @@ public class FoodEntry {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public int getMealOrder() {
+    public String getIconPath() {
 
-        return switch (getMealName()) {
+        if (mealType == null) {
+            throw new IllegalStateException(
+                    "mealType jest null dla wpisu id=" + id
+                            + ", mealName=" + mealName
+            );
+        }
 
-            case "Pierwsze śniadanie" -> 10;
-            case "Śniadanie" -> 20;
-            case "Obiad" -> 30;
-            case "Podwieczorek" -> 40;
-            case "Kolacja" -> 50;
+        return switch (mealType) {
 
-            case "Przekąska" -> 100;
-            case "Inne" -> 110;
+            case "pierwsze śniadanie" -> "/icons/firstbreakfast.svg";
+            case "śniadanie" -> "/icons/breakfast.svg";
+            case "obiad" -> "/icons/lunch.svg";
+            case "podwieczorek" -> "/icons/other.svg";
+            case "kolacja" -> "/icons/dinner.svg";
+            case "przekąska" -> "/icons/snack.svg";
 
-            default -> 999;
+            default -> throw new IllegalStateException(
+                    "Nieobsługiwany mealType: " + mealType);
+        };
+    }
+
+    public String getCssClass() {
+
+        if (mealType == null) {
+            throw new IllegalStateException(
+                    "mealType jest null dla wpisu id=" + id
+                            + ", mealName=" + mealName
+            );
+        }
+
+        return switch (mealType) {
+
+            case "pierwsze śniadanie" -> "meal-first-breakfast";
+            case "śniadanie" -> "meal-breakfast";
+            case "obiad" -> "meal-lunch";
+            case "podwieczorek" -> "meal-other";
+            case "kolacja" -> "meal-dinner";
+            case "przekąska" -> "meal-snack";
+
+            default -> throw new IllegalStateException(
+                    "Nieobsługiwany mealType: " + mealType);
         };
     }
 }

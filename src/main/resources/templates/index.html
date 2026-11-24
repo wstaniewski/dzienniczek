@@ -36,7 +36,7 @@
                 <option value="obiad" th:selected="${selectedFilter == 'obiad'}">Obiad</option>
                 <option value="kolacja" th:selected="${selectedFilter == 'kolacja'}">Kolacja</option>
                 <option value="przekąska" th:selected="${selectedFilter == 'przekąska'}">Przekąska</option>
-                <option value="inne" th:selected="${selectedFilter == 'inne'}">Inne</option>
+                <option value="podwieczorek" th:selected="${selectedFilter == 'podwieczorek'}">Podwieczorek</option>
             </select>
         </form>
 
@@ -53,20 +53,8 @@
 
                 <div class="entries">
 
-                    <div th:each="entry : ${day.value}"
-                         class="entry-item premium-card"
-                         th:classappend="${entry.mealType == 'pierwsze śniadanie' ? ' meal-first-breakfast' :
-                                         (entry.mealType == 'śniadanie' ? ' meal-breakfast' :
-                                         (entry.mealType == 'obiad' ? ' meal-lunch' :
-                                         (entry.mealType == 'kolacja' ? ' meal-dinner' :
-                                         (entry.mealType == 'przekąska' ? ' meal-snack' : ' meal-other'))))}">
-
-                        <img class="entry-icon"
-                             th:src="${entry.mealType == 'pierwsze śniadanie' ? '/icons/firstbreakfast.svg' :
-                                     (entry.mealType == 'śniadanie' ? '/icons/breakfast.svg' :
-                                     (entry.mealType == 'obiad' ? '/icons/lunch.svg' :
-                                     (entry.mealType == 'kolacja' ? '/icons/dinner.svg' :
-                                     (entry.mealType == 'przekąska' ? '/icons/snack.svg' : '/icons/other.svg'))))}">
+                    <div th:each="entry : ${day.value}" class="entry-item premium-card" th:classappend="${entry.cssClass}">
+                        <img class="entry-icon" th:src="${entry.iconPath}">
                         <div class="entry-content">
 
                             <strong th:text="${entry.mealName}"></strong>
@@ -135,7 +123,7 @@
                 <option value="Obiad">Obiad</option>
                 <option value="Kolacja">Kolacja</option>
                 <option value="Przekąska">Przekąska</option>
-                <option value="Inne">Inne</option>
+                <option value="Podwieczorek">Podwieczorek</option>
             </select>
             <label>Kalorie</label>
             <input type="number"
@@ -320,7 +308,7 @@
                 <option value="Obiad">Obiad</option>
                 <option value="Kolacja">Kolacja</option>
                 <option value="Przekąska">Przekąska</option>
-                <option value="Inne">Inne</option>
+                <option value="Podwieczorek">Podwieczorek</option>
             </select>
 
             <label>Kalorie:</label>

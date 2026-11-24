@@ -160,6 +160,7 @@ public class PdfService {
                 case "obiad"              -> "/static/icons/lunch.svg";
                 case "kolacja"            -> "/static/icons/dinner.svg";
                 case "przekąska"          -> "/static/icons/snack.svg";
+                case "podwieczorek"       -> "/static/icons/other.svg";
                 default                   -> "/static/icons/other.svg";
             };
 

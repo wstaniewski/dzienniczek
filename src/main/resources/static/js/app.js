@@ -9,14 +9,14 @@ const icons = {
     "Obiad": "/icons/lunch.svg",
     "Kolacja": "/icons/dinner.svg",
     "Przekąska": "/icons/snack.svg",
-    "Inne": "/icons/other.svg",
+    "Podwieczorek": "/icons/other.svg",
 
     "pierwsze śniadanie": "/icons/firstbreakfast.svg",
     "śniadanie": "/icons/breakfast.svg",
     "obiad": "/icons/lunch.svg",
     "kolacja": "/icons/dinner.svg",
     "przekąska": "/icons/snack.svg",
-    "inne": "/icons/other.svg"
+    "podwieczorek": "/icons/other.svg"
 };
 
 function updateSelectIcon() {

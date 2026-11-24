@@ -350,10 +350,11 @@ public class ProgmanImportService {
     private String resolveMealType(String mealName) {
 
         return switch (mealName) {
-
+            case "Pierwsze śniadanie" -> "pierwsze śniadanie";
             case "Śniadanie" -> "śniadanie";
             case "Obiad" -> "obiad";
-            case "Podwieczorek" -> "przekąska";
+            case "Podwieczorek" -> "podwieczorek";
+            case "Przekąska" -> "przekąska";
 
             default -> "inne";
         };
