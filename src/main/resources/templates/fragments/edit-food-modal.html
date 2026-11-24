@@ -1,0 +1,44 @@
+<div th:fragment="editFoodModal">
+    <div id="editFoodModal" class="modal-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h2>Edytuj wpis</h2>
+                <button type="button"
+                        class="modal-close"
+                        onclick="closeEditFoodModal()">✕
+                </button>
+            </div>
+
+            <form th:action="@{/update}" method="post">
+
+                <input type="hidden" id="edit-id" name="id">
+
+                <label>Rodzaj posiłku:</label>
+                <select id="edit-mealName" name="mealName" class="meal-select-with-icon form-input" required>
+                    <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
+                    <option value="Śniadanie">Śniadanie</option>
+                    <option value="Zupa">Zupa</option>
+                    <option value="Drugie danie">Drugie danie</option>
+                    <option value="Podwieczorek">Podwieczorek</option>
+                    <option value="Kolacja">Kolacja</option>
+                    <option value="Przekąska">Przekąska</option>
+                </select>
+
+                <label>Kalorie:</label>
+                <input type="number" id="edit-calories" name="calories" class="form-input" required>
+
+                <label>Data:</label>
+                <input type="date" id="edit-date" name="date" class="form-input" required>
+
+                <label>Opis:</label>
+                <textarea id="edit-description" name="description" class="form-input" rows="4"></textarea>
+
+                <button type="submit" class="premium-btn">Zaktualizuj</button>
+                <button type="button" class="premium-btn secondary-btn" onclick="closeEditFoodModal()">Anuluj
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>

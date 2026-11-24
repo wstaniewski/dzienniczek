@@ -573,6 +573,14 @@ img {
     transition: .2s;
 }
 
+.meal-time {
+    display: inline-block;
+    min-width: 55px;
+    font-weight: 700;
+    color: #666;
+    margin-right: 8px;
+}
+
 /* Kolory kart */
 .meal-first-breakfast { border-left: 10px solid #5DADE2; }
 .meal-breakfast       { border-left: 10px solid #f1c40f; }

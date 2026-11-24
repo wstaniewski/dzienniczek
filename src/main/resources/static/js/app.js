@@ -207,12 +207,12 @@ document.addEventListener("click", (e) => {
 });
 
 function openFoodModal() {
-    document.getElementById("foodModal").style.display = "flex";
+    document.getElementById("addFoodModal").style.display = "flex";
     document.getElementById("pageContent").classList.add("blurred");
 }
 
 function closeFoodModal() {
-    document.getElementById("foodModal").style.display = "none";
+    document.getElementById("addFoodModal").style.display = "none";
     document.getElementById("pageContent").classList.remove("blurred");
 }
 
@@ -237,12 +237,12 @@ function closePhotoImportModal() {
 }
 
 function openProgmanModal() {
-    document.getElementById("progmanModal").style.display = "flex";
+    document.getElementById("progmanImportModal").style.display = "flex";
     document.getElementById("pageContent").classList.add("blurred");
 }
 
 function closeProgmanModal() {
-    document.getElementById("progmanModal").style.display = "none";
+    document.getElementById("progmanImportModal").style.display = "none";
     document.getElementById("pageContent").classList.remove("blurred");
 }
 

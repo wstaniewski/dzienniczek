@@ -1,0 +1,51 @@
+<div th:fragment="addFoodModal">
+    <div id="addFoodModal" class="modal-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h2>Dodaj wpis</h2>
+                <button type="button"
+                        class="modal-close"
+                        onclick="closeFoodModal()">✕
+                </button>
+            </div>
+            <form th:action="@{/save}"
+                  th:object="${foodEntry}"
+                  method="post">
+                <label>Rodzaj posiłku</label>
+                <select th:field="*{mealName}"
+                        id="mealSelect"
+                        class="meal-select-with-icon form-input">
+                    <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
+                    <option value="Śniadanie">Śniadanie</option>
+                    <option value="Zupa">Zupa</option>
+                    <option value="Drugie danie">Drugie danie</option>
+                    <option value="Podwieczorek">Podwieczorek</option>
+                    <option value="Kolacja">Kolacja</option>
+                    <option value="Przekąska">Przekąska</option>
+                </select>
+                <label>Kalorie</label>
+                <input type="number"
+                       th:field="*{calories}"
+                       class="form-input">
+                <label>Data</label>
+                <input id="dateField"
+                       type="date"
+                       th:field="*{date}"
+                       class="form-input">
+                <label>Opis</label>
+                <textarea
+                        th:field="*{description}"
+                        class="form-input"
+                        rows="4"></textarea>
+                <div class="modal-actions">
+                    <button type="button"
+                            class="premium-btn secondary-btn"
+                            onclick="closeFoodModal()">Anuluj
+                    </button>
+
+                    <button type="submit" class="premium-btn">Zapisz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

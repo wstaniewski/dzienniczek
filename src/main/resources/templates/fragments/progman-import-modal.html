@@ -1,0 +1,62 @@
+<div th:fragment="progmanImportModal">
+    <div id="progmanImportModal" class="modal-overlay">
+
+        <div class="modal-window">
+            <div class="modal-header">
+                <h2>🌐 Import z iOpłatyEdu</h2>
+                <button
+                        type="button"
+                        class="modal-close"
+                        onclick="closeProgmanModal()">
+                    ✕
+                </button>
+
+            </div>
+
+            <p class="modal-description">
+
+                Automatyczne logowanie do iOpłatyEdu
+                i pobieranie jadłospisów bez OCR.
+
+            </p>
+
+            <label for="importFromDate">
+
+                Importuj wpisy od dnia
+
+            </label>
+
+            <input
+                    type="date"
+                    id="importFromDate"
+                    class="form-input">
+
+            <div id="progmanStatus"
+                 style="margin-top:15px;"></div>
+
+            <div class="modal-actions">
+
+                <button
+                        type="button"
+                        class="premium-btn secondary-btn"
+                        onclick="closeProgmanModal()">
+
+                    Anuluj
+
+                </button>
+
+                <button
+                        type="button"
+                        class="premium-btn"
+                        onclick="importProgman()">
+
+                    Importuj
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -26,9 +26,12 @@
         <h2 class="title-premium">Wpisy</h2>
 
         <form action="/filter" method="get" class="filter-form">
-            <select id="filterSelect" name="meal" class="meal-select-with-icon form-input" onchange="this.form.submit()">
+            <select id="filterSelect" name="meal" class="meal-select-with-icon form-input"
+                    onchange="this.form.submit()">
                 <option th:selected="${selectedFilter == 'Wszystkie'}">Wszystkie</option>
-                <option value="pierwsze śniadanie" th:selected="${selectedFilter == 'pierwsze śniadanie'}">Pierwsze śniadanie</option>
+                <option value="pierwsze śniadanie" th:selected="${selectedFilter == 'pierwsze śniadanie'}">Pierwsze
+                    śniadanie
+                </option>
                 <option value="śniadanie" th:selected="${selectedFilter == 'śniadanie'}">Śniadanie</option>
                 <option value="zupa" th:selected="${selectedFilter == 'zupa'}">Zupa</option>
                 <option value="drugie danie" th:selected="${selectedFilter == 'drugie danie'}">Drugie danie</option>
@@ -51,10 +54,11 @@
 
                 <div class="entries">
 
-                    <div th:each="entry : ${day.value}" class="entry-item premium-card" th:classappend="${entry.cssClass}">
+                    <div th:each="entry : ${day.value}" class="entry-item premium-card"
+                         th:classappend="${entry.cssClass}">
                         <img class="entry-icon" th:src="${entry.iconPath}">
                         <div class="entry-content">
-
+                            <span class="meal-time" th:text="${#temporals.format(entry.mealTime, 'HH:mm')}"></span>
                             <strong th:text="${entry.mealName}"></strong>
                             —
                             <span th:text="${entry.calories}"></span> kcal
@@ -84,284 +88,20 @@
                                         onclick="openEditFromButton(this)">
                                     Edytuj
                                 </button>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 </div>
-
-<div id="foodModal" class="modal-overlay">
-    <div class="modal-window">
-        <div class="modal-header">
-            <h2>Dodaj wpis</h2>
-            <button type="button"
-                    class="modal-close"
-                    onclick="closeFoodModal()">✕
-            </button>
-        </div>
-        <form th:action="@{/save}"
-              th:object="${foodEntry}"
-              method="post">
-            <label>Rodzaj posiłku</label>
-            <select th:field="*{mealName}"
-                    id="mealSelect"
-                    class="meal-select-with-icon form-input">
-                <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
-                <option value="Śniadanie">Śniadanie</option>
-                <option value="Zupa">Zupa</option>
-                <option value="Drugie danie">Drugie danie</option>
-                <option value="Podwieczorek">Podwieczorek</option>
-                <option value="Kolacja">Kolacja</option>
-                <option value="Przekąska">Przekąska</option>
-            </select>
-            <label>Kalorie</label>
-            <input type="number"
-                   th:field="*{calories}"
-                   class="form-input">
-            <label>Data</label>
-            <input id="dateField"
-                   type="date"
-                   th:field="*{date}"
-                   class="form-input">
-            <label>Opis</label>
-            <textarea
-                    th:field="*{description}"
-                    class="form-input"
-                    rows="4"></textarea>
-            <div class="modal-actions">
-                <button type="button"
-                        class="premium-btn secondary-btn"
-                        onclick="closeFoodModal()">Anuluj
-                </button>
-
-                <button type="submit" class="premium-btn">Zapisz</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div id="photoImportModal" class="modal-overlay">
-
-    <div class="modal-window">
-
-        <div class="modal-header">
-            <h2>📷 Import z planu żywieniowego</h2>
-
-            <button
-                    type="button"
-                    class="modal-close"
-                    onclick="closePhotoImportModal()">
-                ✕
-            </button>
-        </div>
-
-        <form action="/import/photo"
-              method="post"
-              enctype="multipart/form-data">
-
-            <label>
-                Zdjęcie planu żywieniowego
-            </label>
-
-            <div class="file-row">
-
-                <input
-                        type="file"
-                        name="file"
-                        id="fileUpload"
-                        accept="image/*"
-                        class="file-input"
-                        required>
-
-                <label
-                        for="fileUpload"
-                        class="file-label">
-                    Wybierz zdjęcie
-                </label>
-
-                <span id="file-name"
-                      class="file-name"></span>
-
-            </div>
-
-            <div class="modal-actions">
-
-                <button
-                        type="button"
-                        class="premium-btn secondary-btn"
-                        onclick="closePhotoImportModal()">
-
-                    Anuluj
-
-                </button>
-
-                <button
-                        type="submit"
-                        class="premium-btn">
-
-                    Importuj
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-<div id="progmanModal" class="modal-overlay">
-
-    <div class="modal-window">
-
-        <div class="modal-header">
-
-            <h2>🌐 Import z iOpłatyEdu</h2>
-
-            <button
-                    type="button"
-                    class="modal-close"
-                    onclick="closeProgmanModal()">
-                ✕
-            </button>
-
-        </div>
-
-        <p class="modal-description">
-
-            Automatyczne logowanie do iOpłatyEdu
-            i pobieranie jadłospisów bez OCR.
-
-        </p>
-
-        <label for="importFromDate">
-
-            Importuj wpisy od dnia
-
-        </label>
-
-        <input
-                type="date"
-                id="importFromDate"
-                class="form-input">
-
-        <div id="progmanStatus"
-             style="margin-top:15px;"></div>
-
-        <div class="modal-actions">
-
-            <button
-                    type="button"
-                    class="premium-btn secondary-btn"
-                    onclick="closeProgmanModal()">
-
-                Anuluj
-
-            </button>
-
-            <button
-                    type="button"
-                    class="premium-btn"
-                    onclick="importProgman()">
-
-                Importuj
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div id="editFoodModal" class="modal-overlay">
-
-    <div class="modal-window">
-        <div class="modal-header">
-            <h2>Edytuj wpis</h2>
-            <button type="button"
-                    class="modal-close"
-                    onclick="closeEditFoodModal()">✕
-            </button>
-        </div>
-
-        <form th:action="@{/update}" method="post">
-
-            <input type="hidden" id="edit-id" name="id">
-
-            <label>Rodzaj posiłku:</label>
-            <select id="edit-mealName" name="mealName" class="meal-select-with-icon form-input" required>
-                <option value="Pierwsze śniadanie">Pierwsze śniadanie</option>
-                <option value="Śniadanie">Śniadanie</option>
-                <option value="Zupa">Zupa</option>
-                <option value="Drugie danie">Drugie danie</option>
-                <option value="Podwieczorek">Podwieczorek</option>
-                <option value="Kolacja">Kolacja</option>
-                <option value="Przekąska">Przekąska</option>
-            </select>
-
-            <label>Kalorie:</label>
-            <input type="number" id="edit-calories" name="calories" class="form-input" required>
-
-            <label>Data:</label>
-            <input type="date" id="edit-date" name="date" class="form-input" required>
-
-            <label>Opis:</label>
-            <textarea id="edit-description" name="description" class="form-input" rows="4"></textarea>
-
-            <button type="submit" class="premium-btn">Zaktualizuj</button>
-            <button type="button" class="premium-btn" onclick="closeEdit()">Zamknij</button>
-
-        </form>
-
-    </div>
-
-</div>
-
+<div th:replace="~{fragments/add-food-modal :: addFoodModal}"></div>
+<div th:replace="~{fragments/edit-food-modal :: editFoodModal}"></div>
+<div th:replace="~{fragments/photo-import-modal :: photoImportModal}"></div>
+<div th:replace="~{fragments/progman-import-modal :: progmanImportModal}"></div>
 <script src="/js/app.js"></script>
-
-<div id="fabMenu" class="fab-menu">
-    <button
-            class="fab-action"
-            onclick="downloadPdf()">
-        📄 Pobierz PDF
-    </button>
-
-    <button
-            class="fab-action"
-            onclick="openProgmanModal()">
-        🌐 iOpłatyEdu
-    </button>
-
-    <button
-            class="fab-action"
-            onclick="openPhotoImportModal()">
-        📷 OCR
-    </button>
-
-    <button
-            class="fab-action"
-            onclick="openFoodModal()">
-        ➕ Dodaj wpis
-    </button>
-
-    <button
-            id="fabMain"
-            class="fab-main">
-        +
-    </button>
-</div>
+<div th:replace="~{fragments/fab-menu :: fabMenu}"></div>
 
 </body>
 </html>

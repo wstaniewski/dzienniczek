@@ -27,16 +27,14 @@ public class FoodEntryService {
             entry.setMealType(entry.getMealName().toLowerCase());
 
             switch (entry.getMealName()) {
-                case "Pierwsze śniadanie" ->
-                        entry.setMealTime(LocalTime.of(8,30));
                 case "Śniadanie" ->
+                        entry.setMealTime(LocalTime.of(8,30));
+                case "Zupa" ->
                         entry.setMealTime(LocalTime.of(11,0));
-                case "Obiad" ->
+                case "Drugie danie" ->
                         entry.setMealTime(LocalTime.of(12,0));
                 case "Podwieczorek" ->
                         entry.setMealTime(LocalTime.of(14,30));
-                case "Kolacja" ->
-                        entry.setMealTime(LocalTime.of(18,0));
             }
         }
 

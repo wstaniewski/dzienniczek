@@ -1,0 +1,72 @@
+<div th:fragment="photoImportModal">
+    <div id="photoImportModal" class="modal-overlay">
+
+        <div class="modal-window">
+
+            <div class="modal-header">
+                <h2>📷 Import z planu żywieniowego</h2>
+
+                <button
+                        type="button"
+                        class="modal-close"
+                        onclick="closePhotoImportModal()">
+                    ✕
+                </button>
+            </div>
+
+            <form action="/import/photo"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <label>
+                    Zdjęcie planu żywieniowego
+                </label>
+
+                <div class="file-row">
+
+                    <input
+                            type="file"
+                            name="file"
+                            id="fileUpload"
+                            accept="image/*"
+                            class="file-input"
+                            required>
+
+                    <label
+                            for="fileUpload"
+                            class="file-label">
+                        Wybierz zdjęcie
+                    </label>
+
+                    <span id="file-name"
+                          class="file-name"></span>
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                            type="button"
+                            class="premium-btn secondary-btn"
+                            onclick="closePhotoImportModal()">
+
+                        Anuluj
+
+                    </button>
+
+                    <button
+                            type="submit"
+                            class="premium-btn">
+
+                        Importuj
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
