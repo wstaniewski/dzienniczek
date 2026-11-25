@@ -16,18 +16,20 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.svg.converter.SvgConverter;
 import com.mobilernd.dzienniczek.model.FoodEntry;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class PdfService {
+
+    private final FoodEntryService foodEntryService;
 
     public byte[] generateFoodEntriesPdf(List<FoodEntry> entries) {
         try {
@@ -56,17 +58,7 @@ public class PdfService {
 
             document.add(header);
 
-            // ⭐ GRUPOWANIE PO DACIE + SORTOWANIE MALEJĄCO
-            Map<LocalDate, List<FoodEntry>> entriesByDate = entries.stream()
-                    .collect(Collectors.groupingBy(FoodEntry::getDate))
-                    .entrySet().stream()
-                    .sorted(Map.Entry.<LocalDate, List<FoodEntry>>comparingByKey().reversed())
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (a, b) -> a,
-                            LinkedHashMap::new
-                    ));
+            Map<LocalDate, List<FoodEntry>> entriesByDate  = foodEntryService.entriesByDate(entries);
 
             // ⭐ GENEROWANIE PDF Z GRUPOWANIEM
             for (Map.Entry<LocalDate, List<FoodEntry>> day : entriesByDate.entrySet()) {

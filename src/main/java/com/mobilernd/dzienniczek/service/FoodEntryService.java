@@ -66,7 +66,8 @@ public class FoodEntryService {
         return foodEntryRepository.findByMealType(mealName);
     }
 
-    public Map<LocalDate, List<FoodEntry>> entriesByDate( List<FoodEntry> entries ){
+    public Map<LocalDate, List<FoodEntry>> entriesByDate(List<FoodEntry> entries) {
+
         return entries.stream()
                 .collect(Collectors.groupingBy(FoodEntry::getDate))
                 .entrySet()
@@ -74,14 +75,12 @@ public class FoodEntryService {
                 .sorted(Map.Entry.<LocalDate, List<FoodEntry>>comparingByKey().reversed())
                 .peek(day ->
                         day.getValue().sort(
-                                Comparator
-                                        .comparingInt(this::mealOrder)
-                                        .thenComparing(
-                                                FoodEntry::getMealTime,
-                                                Comparator.nullsLast(
-                                                        Comparator.naturalOrder()
-                                                )
+                                Comparator.comparing(
+                                        FoodEntry::getMealTime,
+                                        Comparator.nullsLast(
+                                                Comparator.naturalOrder()
                                         )
+                                )
                         )
                 )
                 .collect(Collectors.toMap(

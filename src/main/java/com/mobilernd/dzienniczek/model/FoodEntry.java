@@ -17,10 +17,13 @@ public class FoodEntry {
 
     private String dayName;    // NOWE POLE — dzień tygodnia (Poniedziałek, Wtorek...)
 
-    private Integer calories;
+    @Column(nullable = false)
+    private Integer calories = 0;
 
+    @Column(nullable = false)
     private LocalDate date;
 
+    @Column(nullable = false)
     private LocalTime mealTime;
 
     @Column(length = 1000)
